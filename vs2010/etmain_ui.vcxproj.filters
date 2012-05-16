@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<Filter Include="src">
+			<UniqueIdentifier>{2103591D-819D-0E4D-A019-C22AB1BB4DDF}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\qcommon">
+			<UniqueIdentifier>{3FAC8B33-22D5-D041-876D-9DAE10582D76}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\ui">
+			<UniqueIdentifier>{FED3E2B9-5D0E-A14E-8E8F-D73729855C1C}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\renderer">
+			<UniqueIdentifier>{944F4663-206D-964C-9C2D-1EED420BCD7A}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="src\game">
+			<UniqueIdentifier>{81C6D273-713D-AB43-98F7-08E494A83339}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="etmain">
+			<UniqueIdentifier>{A4169FD1-E6B7-344D-BACF-935B84A69A1C}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="etmain\ui">
+			<UniqueIdentifier>{A57352CB-8D5F-0C44-8F84-6D699878FBD7}</UniqueIdentifier>
+		</Filter>
+	</ItemGroup>
+	<ItemGroup>
+		<ClInclude Include="src\qcommon\q_shared.h">
+			<Filter>src\qcommon</Filter>
+		</ClInclude>
+		<ClInclude Include="src\ui\ui_public.h">
+			<Filter>src\ui</Filter>
+		</ClInclude>
+		<ClInclude Include="src\renderer\tr_types.h">
+			<Filter>src\renderer</Filter>
+		</ClInclude>
+		<ClInclude Include="src\ui\keycodes.h">
+			<Filter>src\ui</Filter>
+		</ClInclude>
+		<ClInclude Include="src\game\surfaceflags.h">
+			<Filter>src\game</Filter>
+		</ClInclude>
+		<ClInclude Include="src\ui\ui_local.h">
+			<Filter>src\ui</Filter>
+		</ClInclude>
+		<ClInclude Include="src\ui\ui_shared.h">
+			<Filter>src\ui</Filter>
+		</ClInclude>
+		<ClInclude Include="etmain\ui\menudef.h">
+			<Filter>etmain\ui</Filter>
+		</ClInclude>
+		<ClInclude Include="etmain\ui\menumacros.h">
+			<Filter>etmain\ui</Filter>
+		</ClInclude>
+		<ClInclude Include="src\game\bg_public.h">
+			<Filter>src\game</Filter>
+		</ClInclude>
+		<ClInclude Include="src\game\bg_classes.h">
+			<Filter>src\game</Filter>
+		</ClInclude>
+	</ItemGroup>
+	<ItemGroup>
+		<ClCompile Include="src\qcommon\q_math.c">
+			<Filter>src\qcommon</Filter>
+		</ClCompile>
+		<ClCompile Include="src\qcommon\q_shared.c">
+			<Filter>src\qcommon</Filter>
+		</ClCompile>
+		<ClCompile Include="src\ui\ui_atoms.c">
+			<Filter>src\ui</Filter>
+		</ClCompile>
+		<ClCompile Include="src\ui\ui_gameinfo.c">
+			<Filter>src\ui</Filter>
+		</ClCompile>
+		<ClCompile Include="src\ui\ui_loadpanel.c">
+			<Filter>src\ui</Filter>
+		</ClCompile>
+		<ClCompile Include="src\ui\ui_main.c">
+			<Filter>src\ui</Filter>
+		</ClCompile>
+		<ClCompile Include="src\ui\ui_players.c">
+			<Filter>src\ui</Filter>
+		</ClCompile>
+		<ClCompile Include="src\ui\ui_shared.c">
+			<Filter>src\ui</Filter>
+		</ClCompile>
+		<ClCompile Include="src\ui\ui_syscalls.c">
+			<Filter>src\ui</Filter>
+		</ClCompile>
+		<ClCompile Include="src\game\bg_campaign.c">
+			<Filter>src\game</Filter>
+		</ClCompile>
+		<ClCompile Include="src\game\bg_classes.c">
+			<Filter>src\game</Filter>
+		</ClCompile>
+		<ClCompile Include="src\game\bg_misc.c">
+			<Filter>src\game</Filter>
+		</ClCompile>
+	</ItemGroup>
+</Project>
