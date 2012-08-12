@@ -216,7 +216,7 @@ FunctionEnd
 LangString ^UninstallLink ${LANG_ENGLISH} "Uninstall $(^Name)"
 LangString ^UninstallLink ${LANG_CZECH} "Uninstall $(^Name)"
 LangString ^UninstallLink ${LANG_GERMAN} "Uninstall $(^Name)"
-LangString ^UninstallLink ${LANG_POLISH} "Uninstall $(^Name)"
+LangString ^UninstallLink ${LANG_POLISH} "Odinstaluj $(^Name)"
 
 LangString MainProgram_DESC ${LANG_ENGLISH} "Game binaries"
 LangString GameData_DESC ${LANG_ENGLISH} "Download game datafiles required to play, i.e. pak0.pk3, pak1.pk3, pak2.pk3 and mp_bin.pk3. You will NOT be able to play without them."
@@ -227,5 +227,5 @@ LangString GameData_DESC ${LANG_CZECH} "Download game datafiles required to play
 LangString MainProgram_DESC ${LANG_GERMAN} "Game binaries"
 LangString GameData_DESC ${LANG_GERMAN} "Download game datafiles required to play, i.e. pak0.pk3, pak1.pk3, pak2.pk3 and mp_bin.pk3. You will NOT be able to play without them."
 
-LangString MainProgram_DESC ${LANG_POLISH} "Game binaries"
-LangString GameData_DESC ${LANG_POLISH} "Download game datafiles required to play, i.e. pak0.pk3, pak1.pk3, pak2.pk3 and mp_bin.pk3. You will NOT be able to play without them."
+LangString MainProgram_DESC ${LANG_POLISH} "Pliki wykonywalne"
+LangString GameData_DESC ${LANG_POLISH} "Pobierz pliki wymagane do gry. Są to pliki pak0.pk3, pak1.pk3, pak2.pk3 oraz mp_bin.pk3. Nie jest możliwe granie bez tych plików."
