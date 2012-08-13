@@ -98,16 +98,18 @@ Section !ET:L MainProgram
     WriteRegStr HKLM "${REGKEY}\Components" ET:L 1
 SectionEnd
 
-Section "Download required datafiles" GameData
-    StrCpy $FileToDownload "pak0.pk3"
-    Call Download
-    StrCpy $FileToDownload "pak1.pk3"
-    Call Download
-    StrCpy $FileToDownload "pak2.pk3"
-    Call Download
-    StrCpy $FileToDownload "mp_bin.pk3"
-    Call Download
-SectionEnd
+# Distributing these files is illegal
+# we have to find another way.
+;Section "Download required datafiles" GameData
+;    StrCpy $FileToDownload "pak0.pk3"
+;    Call Download
+;    StrCpy $FileToDownload "pak1.pk3"
+;    Call Download
+;    StrCpy $FileToDownload "pak2.pk3"
+;    Call Download
+;    StrCpy $FileToDownload "mp_bin.pk3"
+;    Call Download
+;SectionEnd
 
 Function Download
     StrCpy $2 "$INSTDIR\etmain\$FileToDownload"
@@ -213,7 +215,7 @@ FunctionEnd
 # Section Descriptions
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${MainProgram} $(MainProgram_DESC)
-    !insertmacro MUI_DESCRIPTION_TEXT ${GameData} $(GameData_DESC)
+;    !insertmacro MUI_DESCRIPTION_TEXT ${GameData} $(GameData_DESC)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 # Installer Language Strings
