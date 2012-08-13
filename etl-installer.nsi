@@ -4,6 +4,8 @@
 ####################################################
 
 Name "Wolfenstein ET: Legacy"
+ 
+RequestExecutionLevel admin #NOTE: You still need to check user rights with UserInfo!
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
@@ -21,7 +23,7 @@ Name "Wolfenstein ET: Legacy"
 !define MUI_STARTMENUPAGE_DEFAULTFOLDER "WolfET Legacy"
 !define MUI_FINISHPAGE_SHOWREADME ""
 !define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
-!define MUI_FINISHPAGE_SHOWREADME_TEXT "Create Desktop Shortcut"
+!define MUI_FINISHPAGE_SHOWREADME_TEXT $(^CreateDesktopShortcut)
 !define MUI_FINISHPAGE_SHOWREADME_FUNCTION finishpageaction
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\win-uninstall.ico"
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
@@ -91,6 +93,7 @@ Section !ET:L MainProgram
     File etmain\cgame_mp_x86.dll
     File etmain\qagame_mp_x86.dll
     File etmain\ui_mp_x86.dll
+    File etmain\pak3.pk3
     SetOutPath $DESKTOP
     WriteRegStr HKLM "${REGKEY}\Components" ET:L 1
 SectionEnd
@@ -122,12 +125,13 @@ Function finishpageaction
 FunctionEnd
 
 Section -post PostInstall
+    SetShellVarContext all
     WriteRegStr HKLM "${REGKEY}" Path $INSTDIR
     SetOutPath $INSTDIR
     WriteUninstaller $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     SetOutPath $SMPROGRAMS\$StartMenuGroup
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk" $INSTDIR\uninstall.exe
+    ;CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk" $INSTDIR\uninstall.exe
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\ET Legacy.lnk" "$INSTDIR\etl.exe" "" "$INSTDIR\wolfet.ico"
     !insertmacro MUI_STARTMENU_WRITE_END
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
@@ -159,6 +163,8 @@ Section /o -un.ET:L UNMainProgram
     Delete /REBOOTOK $INSTDIR\etmain\ui_mp_x86.dll
     Delete /REBOOTOK $INSTDIR\etmain\qagame_mp_x86.dll
     Delete /REBOOTOK $INSTDIR\etmain\cgame_mp_x86.dll
+    Delete /REBOOTOK $INSTDIR\etmain\pak3.pk3
+    RmDir  /r /REBOOTOK $INSTDIR\etmain ; this deletes EVERYTHING recursively! Maybe a bad idea.
     Delete /REBOOTOK $INSTDIR\SDL.dll
     Delete /REBOOTOK $INSTDIR\README-SDL.txt
     Delete /REBOOTOK $INSTDIR\libjpeg-8.dll
@@ -171,17 +177,17 @@ Section /o -un.ET:L UNMainProgram
 SectionEnd
 
 Section -un.post UNPostInstall
+    SetShellVarContext all
     Delete "$DESKTOP\ET Legacy.lnk"
     DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
-    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk"
-    Delete /REBOOTOK "$SMPROGRAMS\ET Legacy.lnk"
+    ;Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\ET Legacy.lnk"
+    RmDir /REBOOTOK "$SMPROGRAMS\$StartMenuGroup"
     Delete /REBOOTOK $INSTDIR\uninstall.exe
     DeleteRegValue HKLM "${REGKEY}" StartMenuGroup
     DeleteRegValue HKLM "${REGKEY}" Path
     DeleteRegKey /IfEmpty HKLM "${REGKEY}\Components"
     DeleteRegKey /IfEmpty HKLM "${REGKEY}"
-    RmDir /REBOOTOK $SMPROGRAMS\$StartMenuGroup
-    RmDir /r /REBOOTOK $INSTDIR\etmain ; this deletes EVERYTHING recursively! Maybe a bad idea.
     RmDir /REBOOTOK $INSTDIR
     Push $R0
     StrCpy $R0 $StartMenuGroup 1
@@ -213,19 +219,34 @@ FunctionEnd
 # Installer Language Strings
 # TODO Update the Language Strings with the appropriate translations.
 
+#
+# ENGLISH
+#
 LangString ^UninstallLink ${LANG_ENGLISH} "Uninstall $(^Name)"
-LangString ^UninstallLink ${LANG_CZECH} "Uninstall $(^Name)"
-LangString ^UninstallLink ${LANG_GERMAN} "Uninstall $(^Name)"
-LangString ^UninstallLink ${LANG_POLISH} "Odinstaluj $(^Name)"
-
 LangString MainProgram_DESC ${LANG_ENGLISH} "Game binaries"
 LangString GameData_DESC ${LANG_ENGLISH} "Download game datafiles required to play, i.e. pak0.pk3, pak1.pk3, pak2.pk3 and mp_bin.pk3. You will NOT be able to play without them."
+LangString ^CreateDesktopShortcut ${LANG_ENGLISH} "Create Desktop Shortcut"
 
-LangString MainProgram_DESC ${LANG_CZECH} "Game binaries"
-LangString GameData_DESC ${LANG_CZECH} "Download game datafiles required to play, i.e. pak0.pk3, pak1.pk3, pak2.pk3 and mp_bin.pk3. You will NOT be able to play without them."
+#
+# CZECH
+#
+LangString ^UninstallLink ${LANG_CZECH} "Odinstaluj $(^Name)"
+LangString MainProgram_DESC ${LANG_CZECH} "Soubory se hrou"
+LangString GameData_DESC ${LANG_CZECH} "Stáhnout soubory s herními daty, t.j. pak0.pk3, pak1.pk3, pak2.pk3 a mp_bin.pk3. Bez nich hru nebude možné spustit."
+LangString ^CreateDesktopShortcut ${LANG_CZECH} "Vytvořit zástupce na ploše"
 
+#
+# GERMAN
+#
+LangString ^UninstallLink ${LANG_GERMAN} "Uninstall $(^Name)"
 LangString MainProgram_DESC ${LANG_GERMAN} "Game binaries"
 LangString GameData_DESC ${LANG_GERMAN} "Download game datafiles required to play, i.e. pak0.pk3, pak1.pk3, pak2.pk3 and mp_bin.pk3. You will NOT be able to play without them."
+LangString ^CreateDesktopShortcut ${LANG_GERMAN} "Create Desktop Shortcut"
 
+#
+# POLISH
+#
+LangString ^UninstallLink ${LANG_POLISH} "Odinstaluj $(^Name)"
 LangString MainProgram_DESC ${LANG_POLISH} "Pliki wykonywalne"
 LangString GameData_DESC ${LANG_POLISH} "Pobierz pliki wymagane do gry. Są to pliki pak0.pk3, pak1.pk3, pak2.pk3 oraz mp_bin.pk3. Nie jest możliwe granie bez tych plików."
+LangString ^CreateDesktopShortcut ${LANG_POLISH} "Create Desktop Shortcut"
