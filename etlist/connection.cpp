@@ -20,175 +20,81 @@
 
 #include "connection.h"
 
-Connection::Connection(std::string server_name, int server_port /*=27960*/,
-                       std::string message /*=getstatus*/)
-	: socket_(io_service_), resolver_(io_service_), deadline_(io_service_)
+Connection::Connection(boost::asio::io_service& io_service,
+                       std::string server_name /*=etlegacy.com*/,
+                       int server_port /*=27960*/,
+                       std::string message /*=getstatus*/,
+                       float timeout /*=1.5*/)
+	: io_service_(io_service), socket_(io_service, udp::v4()), timer_(io_service)
 {
+	udp::resolver        resolver(io_service_);
 	udp::resolver::query query(udp::v4(), server_name,
 	                           boost::lexical_cast<std::string>(server_port));
-	udp::endpoint receiver_endpoint = *resolver_.resolve(query);
+	receiver_endpoint_ = *resolver.resolve(query);
 
-	socket_.open(udp::v4());
-	socket_.send_to(boost::asio::buffer(wrap_message(message), 1024),
-	                receiver_endpoint);
+	socket_.async_send_to(boost::asio::buffer(wrap_message(message)),
+	                      receiver_endpoint_,
+	                      boost::bind(&Connection::HandleSend, this));
 
-	// Set to positive infinity so that there's no action until a specific
-	// deadline is set.
-	deadline_.expires_at(boost::posix_time::pos_infin);
-
-	// Start the persistent actor that checks for deadline expiry.
-	check_deadline();
+	// How long should we wait for the server to respond
+	timer_.expires_from_now(boost::posix_time::seconds(timeout));
+	timer_.async_wait(boost::bind(&Connection::close, this));
 }
 
-/*
+void Connection::close()
+{
+	socket_.close();
+}
+
+/**
  * @brief Wraps messages into the Quake III protocol format
  */
 std::string Connection::wrap_message(std::string message)
 {
 	// NOTE: master server doesn't react to a message terminated with 0xfa
-	return std::string(4, 0xff) + message + std::string(1, 0xfa);
+	return std::string(4, 0xff) + message;
 }
 
-std::size_t Connection::ReceiveMessage(
-    const boost::asio::mutable_buffer& buffer,
-    boost::posix_time::time_duration timeout,
-    boost::system::error_code& ec)
+std::string Connection::get_response()
 {
-	deadline_.expires_from_now(timeout);
-	ec = boost::asio::error::would_block;
-	std::size_t length = 0;
-
-	// Start the asynchronous operation itself. The handle_receive function
-	// used as a callback will update the ec and length variables.
-	socket_.async_receive(boost::asio::buffer(buffer),
-	                      boost::bind(&Connection::handle_receive, _1, _2,
-	                                  &ec, &length));
-
-	// Block until the asynchronous operation has completed.
-	do
-		io_service_.run_one();
-	while (ec == boost::asio::error::would_block);
-
-	return length;
+	return response_;
 }
 
-void Connection::handle_receive(
-    const boost::system::error_code& ec, std::size_t length,
-    boost::system::error_code *out_ec, std::size_t *out_length)
+/**
+ * @brief Calls itself after every received packet.
+ * @note It hangs after the last received packet until it is stopped.
+ */
+void Connection::HandleReceive(const boost::system::error_code& error,
+                               size_t bytes_recvd)
 {
-	*out_ec     = ec;
-	*out_length = length;
-}
-
-void Connection::check_deadline()
-{
-	// Check whether the deadline has passed. We compare the deadline against
-	// the current time since a new asynchronous operation may have moved the
-	// deadline before this actor had a chance to run.
-	if (deadline_.expires_at() <= boost::asio::deadline_timer::traits_type::now())
+	if (!error && bytes_recvd > 0)
 	{
-		// The deadline has passed. The outstanding asynchronous operation needs
-		// to be cancelled so that the blocked receive() function will return.
-		//
-		// Please note that cancel() has portability issues on some versions of
-		// Microsoft Windows, and it may be necessary to use close() instead.
-		// Consult the documentation for cancel() for further information.
-		socket_.cancel();
+		socket_.async_receive_from(
+		    boost::asio::buffer(data_, max_length), receiver_endpoint_,
+		    boost::bind(&Connection::HandleReceive, this,
+		                boost::asio::placeholders::error,
+		                boost::asio::placeholders::bytes_transferred));
 
-		// There is no longer an active deadline. The expiry is set to positive
-		// infinity so that the actor takes no action until a new deadline is set.
-		deadline_.expires_at(boost::posix_time::pos_infin);
+		// std::cout.write(data_, bytes_recvd) << std::endl;
+		response_ += data_;
 	}
-
-	// Put the actor back to sleep.
-	deadline_.async_wait(boost::bind(&Connection::check_deadline, this));
+	else if (error)
+	{
+		std::cout << "Receive error: " << error.message() << std::endl;
+	}
+	// io_service will quit when it has no more work to do
 }
 
-void Connection::ParseMessage(std::string recv_msg)
+/**
+ * @brief Calls HandleReceive for the first packet.
+ *
+ * Separate from the HandleReceive method to avoid adding whitespace to response_
+ */
+void Connection::HandleSend()
 {
-//     recv_msg.erase(recv_msg.find('\0'), recv_msg.npos);
-	size_t headerEnd = recv_msg.find('\n');
-
-	// Omit OOB from the packet name
-	std::cout << "Parsing " <<
-	recv_msg.substr(4, headerEnd - 4) << " packet.... ";
-
-	std::map<std::string, std::string> recv_tokens;
-
-	std::string key, value;
-	size_t      tokenStart = 0;
-	size_t      tokenEnd   = 0;
-
-	for (;; )
-	{
-		/*
-		 * Search for a key
-		 */
-		tokenStart = recv_msg.find('\\', tokenEnd++);
-		tokenEnd   = recv_msg.find('\\', ++tokenStart);
-
-		// No more keys
-		if (tokenStart == std::string::npos)
-		{
-			break;
-		}
-
-		// Key without a value
-		if (tokenEnd == std::string::npos)
-		{
-			key = recv_msg.substr(tokenStart,
-			                      recv_msg.length() - tokenStart);
-			recv_tokens[key] = "";
-			std::cout << "Warning: adding a key with empty value." << std::endl;
-			break;
-		}
-
-		key = recv_msg.substr(tokenStart, tokenEnd - tokenStart);
-
-		/*
-		 * Search for a value
-		 */
-		tokenStart = recv_msg.find('\\', tokenEnd++);
-		tokenEnd   = recv_msg.find('\\', ++tokenStart);
-
-		// No more values
-		if (tokenStart == std::string::npos)
-		{
-			break;
-		}
-
-		// Value is not at the end
-		if (tokenEnd != std::string::npos)
-		{
-			value = recv_msg.substr(tokenStart, tokenEnd - tokenStart);
-		}
-		else
-		{
-			// Last value
-			value = recv_msg.substr(tokenStart, recv_msg.length() - tokenStart);
-		}
-
-		/*
-		 * Store key->value pair in a map
-		 */
-		recv_tokens[key] = value;
-
-		// FIXME: This should not happen, but it does. Why?
-		if (tokenStart >= recv_msg.length() || tokenEnd >= recv_msg.length())
-		{
-			break;
-		}
-	}
-
-	/*
-	     * Display key->value pairs
-	     */
-	std::cout << recv_tokens.size() << " variables paired" << std::endl << std::endl;
-
-	std::map <std::string, std::string>::iterator it;
-	for (it = recv_tokens.begin(); it != recv_tokens.end(); ++it)
-	{
-		std::cout << std::setw(22) << it->first << ": " << it->second <<
-		std::endl;
-	}
+	socket_.async_receive_from(
+	    boost::asio::buffer(data_, max_length), receiver_endpoint_,
+	    boost::bind(&Connection::HandleReceive, this,
+	                boost::asio::placeholders::error,
+	                boost::asio::placeholders::bytes_transferred));
 }

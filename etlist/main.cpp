@@ -26,6 +26,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "connection.h"
+#include "etparser.h"
 
 using boost::asio::ip::udp;
 
@@ -33,7 +34,7 @@ int main(int argc, char *argv[])
 {
 	try
 	{
-		/**
+		/*
 		 * Program options
 		 */
 		boost::program_options::options_description desc("[OPTIONS]");
@@ -47,6 +48,9 @@ int main(int argc, char *argv[])
 		    ("message,m",
 		    boost::program_options::value<std::string>()->default_value("getstatus"),
 		    "message to be sent")
+		    ("timeout,t",
+		    boost::program_options::value<float>()->default_value(1.5),
+		    "seconds to wait for the server to respond")
 		    ("raw,r", "don't parse the server response")
 		;
 		boost::program_options::variables_map var_map;
@@ -65,44 +69,37 @@ int main(int argc, char *argv[])
 			return 1;
 		}
 
-		/**
+		/*
 		 * Send the request
 		 */
-		Connection client(var_map["server"].as<std::string>(),
-		                  var_map["port"].as<unsigned int>(),
-		                  var_map["message"].as<std::string>());
+		boost::asio::io_service io_service;
+		Connection              client(io_service, var_map["server"].as<std::string>(),
+		                               var_map["port"].as<unsigned int>(),
+		                               var_map["message"].as<std::string>(),
+		                               var_map["timeout"].as<float>());
+		io_service.run();
 
-		char                      data[1024];
-		boost::system::error_code ec;
-		std::size_t               n = client.ReceiveMessage(boost::asio::buffer(data),
-		                                                    boost::posix_time::seconds(10),
-		                                                    ec);
+		/*
+		 * Parse the response
+		 */
+		ETParser parser;
 
-		if (ec)
+		if (var_map.count("raw"))
 		{
-			std::cout << "Receive error: " << ec.message() << std::endl;
+			std::cout << client.get_response() << std::endl;
 		}
 		else
 		{
-			if (var_map.count("raw"))
-			{
-				std::cout.write(data, n);
-			}
-			else
-			{
-				client.ParseMessage(std::string(data, n));
-			}
+			parser.ParseMessage(client.get_response());
 		}
 	}
 	catch (std::exception& e)
 	{
 		std::cerr << "Exception caught: " << e.what() << std::endl;
-//         return 1;
 	}
 	catch (...)
 	{
 		std::cerr << "Exception of unknown type!" << std::endl;
-//         return 1;
 	}
 
 	return EXIT_SUCCESS;

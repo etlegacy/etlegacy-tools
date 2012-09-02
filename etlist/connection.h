@@ -17,15 +17,15 @@
  * You should have received a copy of the GNU General Public License
  * along with ET: Legacy. If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef CONNECTION_H
+#define CONNECTION_H
 
 #include <iostream>
 #include <string>
-#include <map>
-#include <iomanip> // using 'setw'
 
 #include <boost/asio.hpp>
 #include <boost/asio/deadline_timer.hpp>
-#include <boost/program_options.hpp>
+#include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/bind.hpp>
 
@@ -34,24 +34,27 @@ using boost::asio::ip::udp;
 class Connection
 {
 public:
-	Connection(std::string server_name = "etlegacy.com",
+	Connection(boost::asio::io_service& io_service,
+	           std::string server_name = "etlegacy.com",
 	           int server_port = 27960,
-	           std::string message = "getstatus");
-
-	std::size_t ReceiveMessage(const boost::asio::mutable_buffer& buffer,
-	                           boost::posix_time::time_duration timeout,
-	                           boost::system::error_code& ec);
-	void ParseMessage(std::string recv_msg);
+	           std::string message = "getstatus",
+	           float timeout = 1.5);
+	void close();
+	std::string get_response();
 private:
-	boost::asio::io_service        io_service_;
-	boost::asio::ip::udp::socket   socket_;
-	boost::asio::deadline_timer    deadline_;
-	boost::asio::ip::udp::resolver resolver_;
+	boost::asio::deadline_timer timer_;
+	boost::asio::io_service     &io_service_;
+	udp::socket                 socket_;
+	udp::endpoint               receiver_endpoint_;
+
+	enum { max_length = 2048 };
+	char        data_[max_length];
+	std::string response_;
+
+	void HandleReceive(const boost::system::error_code& error, size_t bytes_recvd);
+	void HandleSend();
 
 	std::string wrap_message(std::string message);
-
-	void check_deadline();
-	static void handle_receive(
-	    const boost::system::error_code& ec, std::size_t length,
-	    boost::system::error_code *out_ec, std::size_t *out_length);
 };
+
+#endif // CONNECTION_H

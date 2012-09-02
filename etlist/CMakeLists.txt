@@ -5,6 +5,6 @@ project(etlist)
 Find_Package(Boost REQUIRED COMPONENTS system program_options) # Specifying 'asio' doesn't work
 Find_Package(Threads) # asio dependency
 
-add_executable(etlist connection.cpp main.cpp)
+add_executable(etlist main.cpp connection.cpp etparser.cpp)
 
 target_link_libraries(etlist ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
