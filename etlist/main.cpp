@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 		{
 			std::cerr << "Usage: " << argv[0] << " -s <server>" << std::endl;
 			std::cerr << "Append -h or --help to see all program options." << std::endl;
-			return 1;
+			return EXIT_FAILURE;
 		}
 
 		/*
@@ -82,15 +82,16 @@ int main(int argc, char *argv[])
 		/*
 		 * Parse the response
 		 */
-		ETParser parser;
-
 		if (var_map.count("raw"))
 		{
-			std::cout << client.get_response() << std::endl;
+			for (int i = 0; i < client.get_response().size(); i++)
+			{
+				std::cout << "Response #" << i << ": " << client.get_response()[i] << std::endl << std::endl;
+			}
 		}
 		else
 		{
-			parser.ParseMessage(client.get_response());
+			ETParser parser(client.get_response());
 		}
 	}
 	catch (std::exception& e)

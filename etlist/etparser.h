@@ -20,16 +20,27 @@
 #ifndef ETPARSER_H
 #define ETPARSER_H
 
+#include <iostream>
+#include <string>
+#include <map>
+#include <iomanip> // using 'setw'
+
+#include <boost/tokenizer.hpp>
+#include <boost/algorithm/string.hpp>
+
 class ETParser
 {
 public:
-	ETParser();
-	virtual ~ETParser();
+	ETParser(std::vector<std::string> packets);
 
-	void SplitIntoParts(std::string msg_to_split);
-	void ParseMessage(std::string recv_msg);
+	void ParseResponse(std::string rsp_to_parse);
+	void SplitVariables(std::string rsp_to_split);
+
+	void set_response_name(std::string rsp_header);
+	std::string get_variable(std::string key);
+	void add_variable(std::string key, std::string value);
 private:
-
+	std::map<std::string, std::string> response_variables_;
 };
 
 #endif // ETPARSER_H

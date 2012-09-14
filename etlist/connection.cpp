@@ -55,7 +55,7 @@ std::string Connection::wrap_message(std::string message)
 	return std::string(4, 0xff) + message;
 }
 
-std::string Connection::get_response()
+std::vector<std::string> Connection::get_response()
 {
 	return response_;
 }
@@ -76,12 +76,14 @@ void Connection::HandleReceive(const boost::system::error_code& error,
 		                boost::asio::placeholders::bytes_transferred));
 
 		// std::cout.write(data_, bytes_recvd) << std::endl;
-		response_ += data_;
+		response_.push_back(data_);
 	}
+#if 0
 	else if (error)
 	{
-		std::cout << "Receive error: " << error.message() << std::endl;
+		std::cout << "Receive error: [" << error.category().name() << "] " << error.message() << std::endl;
 	}
+#endif
 	// io_service will quit when it has no more work to do
 }
 

@@ -40,7 +40,7 @@ public:
 	           std::string message = "getstatus",
 	           float timeout = 1.5);
 	void close();
-	std::string get_response();
+	std::vector<std::string> get_response();
 private:
 	boost::asio::deadline_timer timer_;
 	boost::asio::io_service     &io_service_;
@@ -48,8 +48,8 @@ private:
 	udp::endpoint               receiver_endpoint_;
 
 	enum { max_length = 2048 };
-	char        data_[max_length];
-	std::string response_;
+	char                     data_[max_length];
+	std::vector<std::string> response_;
 
 	void HandleReceive(const boost::system::error_code& error, size_t bytes_recvd);
 	void HandleSend();
