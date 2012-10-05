@@ -93,10 +93,11 @@ Section !ET:L MainProgram
     File etmain\cgame_mp_x86.dll
     File etmain\qagame_mp_x86.dll
     File etmain\ui_mp_x86.dll
+    ## REMOVE THIS
     File etmain\pak3.pk3
     SetOutPath $INSTDIR\etl
-    # File etl\mp_bin.pk3
-    # File etl\pak3.pk3
+    ## File etl\etl_mp_bin.pk3
+    ## File etl\etl_pak3.pk3
     SetOutPath $DESKTOP
     WriteRegStr HKLM "${REGKEY}\Components" ET:L 1
 SectionEnd
@@ -171,12 +172,13 @@ Section /o -un.ET:L UNMainProgram
     Delete /REBOOTOK $INSTDIR\etmain\ui_mp_x86.dll
     Delete /REBOOTOK $INSTDIR\etmain\qagame_mp_x86.dll
     Delete /REBOOTOK $INSTDIR\etmain\cgame_mp_x86.dll
+    ## REMOVE THIS
     Delete /REBOOTOK $INSTDIR\etmain\pak3.pk3
     RmDir  /r /REBOOTOK $INSTDIR\etmain ; this deletes EVERYTHING recursively! Maybe a bad idea.
 
     #etl
-    #Delete /REBOOTOK $INSTDIR\etl\pak3.pk3
-    #Delete /REBOOTOK $INSTDIR\etl\mp_bin.pk3
+    ## Delete /REBOOTOK $INSTDIR\etl\etl_pak3.pk3
+    ## Delete /REBOOTOK $INSTDIR\etl\etl_mp_bin.pk3
     RmDir  /r /REBOOTOK $INSTDIR\etl ; this deletes EVERYTHING recursively! Maybe a bad idea.
 
     #root
