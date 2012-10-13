@@ -14,6 +14,10 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+ * This file contains code from the Wetsi project created by acqu.
+ * Wetsi source code repository is located at:
+ * http://sourceforge.net/p/wetsi/
+ *
  * You should have received a copy of the GNU General Public License
  * along with ET: Legacy. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -31,7 +35,7 @@ ETParser::ETParser(std::vector<std::string> packets)
 	for (it = response_variables_.begin(); it != response_variables_.end(); ++it)
 	{
 		std::cout << std::setw(22) << it->first << ": " << it->second <<
-		std::endl;
+		    std::endl;
 	}
 }
 
@@ -64,11 +68,67 @@ void ETParser::ParseResponse(std::string rsp_to_parse)
 	}
 	else if (get_variable("response_name") == "getserversResponse")
 	{
-		// TODO
+		/*
+		 * The following code was adapted from the Wetsi project
+		 */
+		static int servernr = 1;
+		int        i        = rsp_to_parse.find('\\') + 1; // skip to the first item
+
+		if (i >= rsp_to_parse.npos)
+		{
+			std::cout << "ERROR: nothing to parse" << std::endl;
+			return;
+		}
+
+		struct
+		{
+			std::string address;
+			unsigned short port;
+		} server;
+
+		while (i < rsp_to_parse.npos)
+		{
+			// 'EOT' found, abort successfully
+			if (rsp_to_parse[i] == 'E' && rsp_to_parse[i + 1] == 'O' && rsp_to_parse[i + 2] == 'T')
+			{
+				return;
+			}
+
+			// should never happen
+			if (i + 6 >= rsp_to_parse.npos)
+			{
+				std::cout << "ERROR: incomplete packet" << std::endl;
+				return;
+			}
+
+			// parse out ip
+			std::stringstream ss;
+			ss << (int)(unsigned char)rsp_to_parse[i++] << "."
+			   << (int)(unsigned char)rsp_to_parse[i++] << "."
+			   << (int)(unsigned char)rsp_to_parse[i++] << "."
+			   << (int)(unsigned char)rsp_to_parse[i++];
+			server.address = ss.str();
+
+			// parse out port
+			server.port  = rsp_to_parse[i++] << 8;
+			server.port += rsp_to_parse[i++];
+
+			std::cout << "|" << servernr << "| "
+			          << server.address << ":" << server.port << std::endl;
+
+			servernr++;
+
+			// should never happen
+			if (rsp_to_parse[i++] != '\\')
+			{
+				std::cout << "ERROR: char '\\' not found. Returning." << std::endl;
+				return;
+			}
+		}
 	}
 	else
 	{
-		std::cout << "UNKNOWN RESPONSE TYPE" << std::endl;
+		std::cout << "ERROR: unknown response type" << std::endl;
 	}
 }
 
