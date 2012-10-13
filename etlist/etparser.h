@@ -24,7 +24,6 @@
 #include <string>
 #include <sstream>
 #include <map>
-#include <iomanip> // using 'setw'
 
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp>

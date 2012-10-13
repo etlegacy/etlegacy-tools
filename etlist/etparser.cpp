@@ -34,8 +34,7 @@ ETParser::ETParser(std::vector<std::string> packets)
 	std::map <std::string, std::string>::iterator it;
 	for (it = response_variables_.begin(); it != response_variables_.end(); ++it)
 	{
-		std::cout << std::setw(22) << it->first << ": " << it->second <<
-		    std::endl;
+		std::cout << it->first << ": " << it->second << std::endl;
 	}
 }
 
@@ -69,20 +68,13 @@ void ETParser::ParseResponse(std::string rsp_to_parse)
 		/*
 		 * The following code was adapted from the Wetsi project
 		 */
-		static int servernr = 1;
-		int        i        = rsp_to_parse.find('\\') + 1; // skip to the first item
+		int i = rsp_to_parse.find('\\') + 1; // skip to the first item
 
 		if (i >= rsp_to_parse.npos)
 		{
 			std::cout << "ERROR: nothing to parse" << std::endl;
 			return;
 		}
-
-		struct
-		{
-			std::string address;
-			unsigned short port;
-		} server;
 
 		while (i < rsp_to_parse.npos)
 		{
@@ -100,21 +92,14 @@ void ETParser::ParseResponse(std::string rsp_to_parse)
 			}
 
 			// parse out ip
-			std::stringstream ss;
-			ss << (int)(unsigned char)rsp_to_parse[i++] << "."
-			   << (int)(unsigned char)rsp_to_parse[i++] << "."
-			   << (int)(unsigned char)rsp_to_parse[i++] << "."
-			   << (int)(unsigned char)rsp_to_parse[i++];
-			server.address = ss.str();
+			std::stringstream server_addr;
+			server_addr << (int)(unsigned char)rsp_to_parse[i++] << "."
+			            << (int)(unsigned char)rsp_to_parse[i++] << "."
+			            << (int)(unsigned char)rsp_to_parse[i++] << "."
+			            << (int)(unsigned char)rsp_to_parse[i++] << ":"
+			            << (unsigned short)((rsp_to_parse[i++] << 8) + rsp_to_parse[i++]);
 
-			// parse out port
-			server.port  = rsp_to_parse[i++] << 8;
-			server.port += rsp_to_parse[i++];
-
-			std::cout << "|" << servernr << "| "
-			          << server.address << ":" << server.port << std::endl;
-
-			servernr++;
+			add_variable("server", server_addr.str());
 
 			// should never happen
 			if (rsp_to_parse[i++] != '\\')
