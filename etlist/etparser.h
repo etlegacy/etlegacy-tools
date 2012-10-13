@@ -41,7 +41,7 @@ public:
 	std::string get_variable(std::string key);
 	void add_variable(std::string key, std::string value);
 private:
-	std::map<std::string, std::string> response_variables_;
+	std::multimap<std::string, std::string> response_variables_;
 };
 
 #endif // ETPARSER_H

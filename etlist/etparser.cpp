@@ -50,19 +50,17 @@ void ETParser::ParseResponse(std::string rsp_to_parse)
 		boost::split(parts, rsp_to_parse, boost::is_any_of("\n"), boost::token_compress_on);
 
 		SplitVariables(parts.at(1));
+
+		// Only relevant for 'statusResponse'
+		// Player information is separated by a newline.
 		if (parts.size() > 1)
 		{
-			std::string players;
 			for (int i = 2; i < parts.size(); i++)
 			{
 				if (!parts[i].empty())
 				{
-					players += parts[i] + std::string(1, 0xFF);
+					add_variable("player", parts[i]);
 				}
-			}
-			if (!players.empty())
-			{
-				add_variable("players", players);
 			}
 		}
 	}
@@ -158,7 +156,7 @@ void ETParser::SplitVariables(std::string rsp_to_split)
 		{
 			key = rsp_to_split.substr(tokenStart,
 			                          rsp_to_split.length() - tokenStart);
-			response_variables_[key] = std::string("");
+			add_variable(key, std::string(""));
 			std::cout << "Warning: adding a key with empty value." << std::endl;
 			break;
 		}
@@ -190,7 +188,7 @@ void ETParser::SplitVariables(std::string rsp_to_split)
 			                            rsp_to_split.length() - tokenStart);
 		}
 
-		response_variables_[key] = value;
+		add_variable(key, value);
 
 		// FIXME: This should not happen, but it does. Why?
 		if (tokenStart >= rsp_to_split.length() ||
@@ -214,21 +212,23 @@ void ETParser::add_variable(std::string key, std::string value)
 
 void ETParser::set_response_name(std::string rsp_header)
 {
-	try
+	// Check if the packet is valid
+	if (rsp_header.substr(0, 4) != std::string(4, 0xff))
 	{
-		// Omit OOB (4x0xFF) from the packet start
+		std::cout << "WARNING: response contains invalid header"
+		          << std::endl;
+	}
+	else
+	{
+		// Omit OOB (4 x 0xFF) from the packet start
 		rsp_header = rsp_header.substr(4);
-
-		// getserversResponse is delimited by a backslash
-		// statusResponse and infoResponse are delimited by a newline
-		std::vector<std::string> parts;
-		boost::split(parts, rsp_header, boost::is_any_of("\\ \n"), boost::token_compress_on);
-
-		add_variable("response_name", parts[0]);
 	}
-	catch (std::out_of_range& exception)
-	{
-		std::cerr << "Invalid response: " << rsp_header << std::endl;
-		exit(EXIT_FAILURE);
-	}
+
+	// getserversResponse is delimited by a backslash
+	// statusResponse and infoResponse are delimited by a newline
+	std::vector<std::string> parts;
+	boost::split(parts, rsp_header, boost::is_any_of("\\ \n"), boost::token_compress_on);
+
+	response_variables_.erase("response_name");
+	add_variable("response_name", parts[0]);
 }
