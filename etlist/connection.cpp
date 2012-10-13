@@ -76,7 +76,7 @@ void Connection::HandleReceive(const boost::system::error_code& error,
 		                boost::asio::placeholders::bytes_transferred));
 
 		// std::cout.write(data_, bytes_recvd) << std::endl;
-		response_.push_back(data_);
+		response_.push_back(std::string(data_, bytes_recvd));
 	}
 #if 0
 	else if (error)
