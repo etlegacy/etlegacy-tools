@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 		    ("server,s", boost::program_options::value<std::string>(),
 		    "server to query")
 		    ("port,p",
-		    boost::program_options::value<unsigned int>()->default_value(27960),
+		    boost::program_options::value<unsigned short>()->default_value(27960),
 		    "port on the server")
 		    ("message,m",
 		    boost::program_options::value<std::string>()->default_value("getstatus"),
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 		 */
 		boost::asio::io_service io_service;
 		Connection              client(io_service, var_map["server"].as<std::string>(),
-		                               var_map["port"].as<unsigned int>(),
+		                               var_map["port"].as<unsigned short>(),
 		                               var_map["message"].as<std::string>(),
 		                               var_map["timeout"].as<float>());
 		io_service.run();

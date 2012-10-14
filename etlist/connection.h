@@ -36,7 +36,7 @@ class Connection
 public:
 	Connection(boost::asio::io_service& io_service,
 	           std::string server_name = "etlegacy.com",
-	           int server_port = 27960,
+	           unsigned short server_port = 27960,
 	           std::string message = "getstatus",
 	           float timeout = 1.5);
 	void close();

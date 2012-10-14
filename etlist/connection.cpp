@@ -21,14 +21,22 @@
 #include "connection.h"
 
 Connection::Connection(boost::asio::io_service& io_service,
-                       std::string server_name /*=etlegacy.com*/,
-                       int server_port /*=27960*/,
+                       std::string server_address /*=etlegacy.com*/,
+                       unsigned short server_port /*=27960*/,
                        std::string message /*=getstatus*/,
                        float timeout /*=1.5*/)
 	: io_service_(io_service), socket_(io_service, udp::v4()), timer_(io_service)
 {
+	// Allow ip:port address format
+	if (server_address.find(":") != std::string::npos)
+	{
+		server_port = boost::lexical_cast<unsigned short>
+		                  (server_address.substr(server_address.find(":") + 1));
+		server_address = server_address.substr(0, server_address.find(":"));
+	}
+
 	udp::resolver        resolver(io_service_);
-	udp::resolver::query query(udp::v4(), server_name,
+	udp::resolver::query query(udp::v4(), server_address,
 	                           boost::lexical_cast<std::string>(server_port));
 	receiver_endpoint_ = *resolver.resolve(query);
 
