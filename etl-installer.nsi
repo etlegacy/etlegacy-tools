@@ -7,9 +7,9 @@ Name "Wolfenstein ET: Legacy"
 
 # FIXME/TODO
 #
-# add etlded to windows menu
+# add etlded to windows menu (done/feedback)
 # rename this "ET: L" in installer options to ET:Legacy V2.70
-# add +set fs_game legacy to etl and etlded
+# add +set fs_game legacy to etl and etlded (done/feedback)
 # add option to set fs_hompath
 # add options to complete install (missing genuine files)
 # - do a search for installed W:ET and get the files from
@@ -148,7 +148,8 @@ Function Download
 FunctionEnd
 
 Function finishpageaction
-    CreateShortcut "$DESKTOP\ET Legacy.lnk" "$INSTDIR\etl.exe" "" "$INSTDIR\wolfet.ico"
+    CreateShortcut "$DESKTOP\ET Legacy.lnk" "$INSTDIR\etl.exe" "+set fs_game legacy" "$INSTDIR\wolfet.ico"
+    CreateShortcut "$DESKTOP\ET Legacy dedicated.lnk" "$INSTDIR\etlded.exe" "+set fs_game legacy" "$INSTDIR\wolfet.ico"
 FunctionEnd
 
 Section -post PostInstall
@@ -159,7 +160,9 @@ Section -post PostInstall
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     SetOutPath $SMPROGRAMS\$StartMenuGroup
     ;CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk" $INSTDIR\uninstall.exe
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\ET Legacy.lnk" "$INSTDIR\etl.exe" "" "$INSTDIR\wolfet.ico"
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\ET Legacy.lnk" "$INSTDIR\etl.exe" "+set fs_game legacy" "$INSTDIR\wolfet.ico"
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\ET Legacy dedicated.lnk" "$INSTDIR\etlded.exe" "+set fs_game legacy" "$INSTDIR\wolfet.ico"
+
     !insertmacro MUI_STARTMENU_WRITE_END
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayVersion "${VERSION}"
@@ -187,6 +190,7 @@ done${UNSECTION_ID}:
 # Uninstaller sections
 Section /o -un.ET:L UNMainProgram
     Delete /REBOOTOK "$DESKTOP\ET Legacy.lnk"
+    Delete /REBOOTOK "$DESKTOP\ET Legacy dedicated.lnk"
 	
     #etmain
     Delete /REBOOTOK $INSTDIR\etmain\etl_server.cfg
@@ -220,6 +224,7 @@ Section -un.post UNPostInstall
     DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
     ;Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\ET Legacy.lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\ET Legacy dedicated.lnk"
     RmDir /REBOOTOK "$SMPROGRAMS\$StartMenuGroup"
     Delete /REBOOTOK $INSTDIR\uninstall.exe
     DeleteRegValue HKLM "${REGKEY}" StartMenuGroup
