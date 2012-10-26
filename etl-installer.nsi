@@ -11,10 +11,13 @@ Name "Wolfenstein ET: Legacy"
 # rename this "ET: L" in installer options to ET:Legacy V2.70
 # add +set fs_game legacy to etl and etlded
 # add option to set fs_hompath
-# add options to complete install (missing genuine files) 
+# add options to complete install (missing genuine files)
 # - do a search for installed W:ET and get the files from
 # -- search by key
 # -- search by user input path
+# --- if install is found
+# ---- add option to use key
+# ---- copy mp_bin.pk3, pa0.pk3, pak1.pk3, pak2.pk3 to etmain
 # -- ask to download and install genuine files
 # --- run installer again
 # --- worst case points to http://www.etlegacy.com/projects/etlegacy/wiki/Windows 
