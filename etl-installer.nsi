@@ -4,7 +4,22 @@
 ####################################################
 
 Name "Wolfenstein ET: Legacy"
- 
+
+# FIXME/TODO
+#
+# add etlded to windows menu
+# rename this "ET: L" in installer options to ET:Legacy V2.70
+# add +set fs_game legacy to etl and etlded
+# add option to set fs_hompath
+# add options to complete install (missing genuine files) 
+# - do a search for installed W:ET and get the files from
+# -- search by key
+# -- search by user input path
+# -- ask to download and install genuine files
+# --- run installer again
+# --- worst case points to http://www.etlegacy.com/projects/etlegacy/wiki/Windows 
+# add omnibot files to installer options (default: true)
+
 RequestExecutionLevel admin #NOTE: You still need to check user rights with UserInfo!
 
 # General Symbol Definitions
@@ -71,8 +86,8 @@ VIAddVersionKey /LANG=${LANG_ENGLISH} ProductVersion "${VERSION}"
 VIAddVersionKey /LANG=${LANG_ENGLISH} CompanyName "${COMPANY}"
 VIAddVersionKey /LANG=${LANG_ENGLISH} CompanyWebsite "${URL}"
 VIAddVersionKey /LANG=${LANG_ENGLISH} FileVersion "${VERSION}"
-VIAddVersionKey /LANG=${LANG_ENGLISH} FileDescription ""
-VIAddVersionKey /LANG=${LANG_ENGLISH} LegalCopyright ""
+VIAddVersionKey /LANG=${LANG_ENGLISH} FileDescription "Wolfenstein Enemy Territory: Legacy - best multiplayer game ever."
+VIAddVersionKey /LANG=${LANG_ENGLISH} LegalCopyright "GNU GENERAL PUBLIC LICENSE V3"
 InstallDirRegKey HKLM "${REGKEY}" Path
 ShowUninstDetails show
 
@@ -86,18 +101,21 @@ Section !ET:L MainProgram
     File wolfet.ico
     File libcurl.dll
     File libfreetype-6.dll
+    File README-libjpeg-8.txt
     File libjpeg-8.dll
     File README-SDL.txt
     File SDL.dll
     SetOutPath $INSTDIR\etmain
-    File etmain\cgame_mp_x86.dll
-    File etmain\qagame_mp_x86.dll
-    File etmain\ui_mp_x86.dll
-    ## REMOVE THIS
-    File etmain\pak3.pk3
-    SetOutPath $INSTDIR\etl
-    ## File etl\etl_mp_bin.pk3
-    ## File etl\etl_pak3.pk3
+    File etmain\etl_server.cfg
+    File etmain\lmscycle.cfg
+    File etmain\objectivecycle.cfg
+    File etmain\campaigncycle.cfg
+
+    SetOutPath $INSTDIR\legacy
+    File legacy\etl_bin.pk3
+    File legacy\pak3.pk3
+    File legacy\qagame_mp_x86.dll
+ 
     SetOutPath $DESKTOP
     WriteRegStr HKLM "${REGKEY}\Components" ET:L 1
 SectionEnd
@@ -138,7 +156,6 @@ Section -post PostInstall
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     SetOutPath $SMPROGRAMS\$StartMenuGroup
     ;CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk" $INSTDIR\uninstall.exe
-#FIXME: start Legacy with fs_game etl
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\ET Legacy.lnk" "$INSTDIR\etl.exe" "" "$INSTDIR\wolfet.ico"
     !insertmacro MUI_STARTMENU_WRITE_END
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
@@ -167,23 +184,24 @@ done${UNSECTION_ID}:
 # Uninstaller sections
 Section /o -un.ET:L UNMainProgram
     Delete /REBOOTOK "$DESKTOP\ET Legacy.lnk"
-    
+	
     #etmain
-    Delete /REBOOTOK $INSTDIR\etmain\ui_mp_x86.dll
-    Delete /REBOOTOK $INSTDIR\etmain\qagame_mp_x86.dll
-    Delete /REBOOTOK $INSTDIR\etmain\cgame_mp_x86.dll
-    ## REMOVE THIS
-    Delete /REBOOTOK $INSTDIR\etmain\pak3.pk3
+    Delete /REBOOTOK $INSTDIR\etmain\etl_server.cfg
+    Delete /REBOOTOK $INSTDIR\etmain\lmscycle.cfg
+    Delete /REBOOTOK $INSTDIR\etmain\objectivecycle.cfg
+    Delete /REBOOTOK $INSTDIR\etmain\campaigncycle.cfg
     RmDir  /r /REBOOTOK $INSTDIR\etmain ; this deletes EVERYTHING recursively! Maybe a bad idea.
 
-    #etl
-    ## Delete /REBOOTOK $INSTDIR\etl\etl_pak3.pk3
-    ## Delete /REBOOTOK $INSTDIR\etl\etl_mp_bin.pk3
-    RmDir  /r /REBOOTOK $INSTDIR\etl ; this deletes EVERYTHING recursively! Maybe a bad idea.
+    #legacy
+    Delete /REBOOTOK $INSTDIR\legacy\pak3.pk3
+    Delete /REBOOTOK $INSTDIR\legacy\etl_bin.pk3
+    Delete /REBOOTOK $INSTDIR\legacy\qagame_mp_x86.dll
+    RmDir  /r /REBOOTOK $INSTDIR\legacy ; this deletes EVERYTHING recursively! Maybe a bad idea.
 
     #root
     Delete /REBOOTOK $INSTDIR\SDL.dll
     Delete /REBOOTOK $INSTDIR\README-SDL.txt
+    Delete /REBOOTOK $INSTDIR\README-libjpeg-8.txt
     Delete /REBOOTOK $INSTDIR\libjpeg-8.dll
     Delete /REBOOTOK $INSTDIR\libfreetype-6.dll
     Delete /REBOOTOK $INSTDIR\libcurl.dll
