@@ -103,7 +103,7 @@ Section !ET:L MainProgram
     File etlded.exe
     File wolfet.ico
     File libcurl.dll
-    File libfreetype-6.dll
+    ;File libfreetype-6.dll
     File README-libjpeg-8.txt
     File libjpeg-8.dll
     File README-SDL.txt
@@ -206,7 +206,7 @@ Section /o -un.ET:L UNMainProgram
     Delete /REBOOTOK $INSTDIR\README-SDL.txt
     Delete /REBOOTOK $INSTDIR\README-libjpeg-8.txt
     Delete /REBOOTOK $INSTDIR\libjpeg-8.dll
-    Delete /REBOOTOK $INSTDIR\libfreetype-6.dll
+    ;Delete /REBOOTOK $INSTDIR\libfreetype-6.dll
     Delete /REBOOTOK $INSTDIR\libcurl.dll
     Delete /REBOOTOK $INSTDIR\etlded.exe
     Delete /REBOOTOK $INSTDIR\etl.exe
