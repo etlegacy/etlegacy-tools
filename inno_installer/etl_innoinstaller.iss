@@ -82,12 +82,17 @@ begin
   // Set initial values (optional)
   InstallDataPage.SelectedValueIndex := 0; // Default: Yes
 
-  // Locate W:ET 2.60b etmain directory
+  // Let user choose the location of etmain directory
   EtmainDirPage := CreateInputDirPage(InstallDataPage.ID,
     'Select "etmain" directory inside W:ET 2.60b installation', '',
     'Select the "etmain" folder inside your Wolfenstein: Enemy Territory 2.60b installation, then click Next.',
     False, '');
   EtmainDirPage.Add('');
+
+  // Locate W:ET 2.60b etmain directory
+  if RegQueryStringValue(HKLM, 'Software\Activision\Wolfenstein - Enemy Territory', 'InstallPath', InstallPath) then begin
+    EtmainDirPage.Values[0] := InstallPath + '\etmain'
+  end;
 
   // Download W:ET data files
   itd_init;
