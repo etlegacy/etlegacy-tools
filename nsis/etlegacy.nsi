@@ -1,9 +1,9 @@
 ; ------------------------
 ; ET:Legacy NSIS installer
 ; ------------------------
-; Before runing NSIS, ensure to
-; - add NSIS zip plug-in in the current folder (download at http://nsis.sourceforge.net/ZipDLL_plug-in)
-; - add ET:Legacy binary files in a ."/etlegacy-windows-${VERSION}" subfolder without omni-bot files.
+; Before running NSIS, ensure to
+; - add NSIS zip plug-in in the current folder (http://nsis.sourceforge.net/ZipDLL_plug-in)
+; - add ET:Legacy binary files in a ."/etlegacy-windows-${VERSION}" subfolder without Omni-bot files.
 ; - change the version number below. You don't need to change anything else.
 
 !define VERSION "2.71rc3"
@@ -173,7 +173,7 @@ Section "Wolfenstein: Enemy Territory assets" ASSETS
     END:
 SectionEnd
 
-Section "Omni-Bot" OMNIBOT
+Section "Omni-bot" OMNIBOT
     AddSize 65000 ; approx
     SetOutPath $TEMP
     GOTO GET_BOT
@@ -191,13 +191,12 @@ Section "Omni-Bot" OMNIBOT
         MessageBox MB_ICONEXCLAMATION|MB_OK "Fatal Error: Omni-bot extraction failed."
 
     END:
-
-    SetOutPath $INSTDIR
-    CreateDirectory "$SMPROGRAMS\Enemy Territory - Legacy"
-    CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Enemy Territory - Legacy with Omni-Bots.lnk" "$INSTDIR\etl.exe"  "+set omni_bot enable 1 +set omnibot_path legacy\omni-bot\"
+        SetOutPath $INSTDIR
+        CreateDirectory "$SMPROGRAMS\Enemy Territory - Legacy"
+        CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Launch Enemy Territory - Legacy with Omni-bots.lnk" "$INSTDIR\etl.exe"  "+set omni_bot enable 1 +set omnibot_path legacy\omni-bot\"
 SectionEnd
 
-Section "Protocol registration" URI
+Section -URI
     WriteRegStr HKCR "et" "URL Protocol" ""
     WriteRegStr HKCR "et" "" "URL: Enemy Territory Protocol"
     WriteRegStr HKCR "et\DefaultIcon" "" "$INSTDIR\etl.exe"
@@ -233,8 +232,9 @@ SectionEnd
 Section -Shortcuts
     SetOutPath $INSTDIR
     CreateDirectory "$SMPROGRAMS\Enemy Territory - Legacy"
-    CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Enemy Territory - Legacy Homepage.lnk" "http://www.etlegacy.com"
-    CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Enemy Territory - Legacy.lnk" "$INSTDIR\etl.exe"
+    CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Enemy Territory - Legacy Homepage.lnk" "http://www.etlegacy.com" "" "$INSTDIR\etl.ico"
+    CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Launch Enemy Territory - Legacy.lnk" "$INSTDIR\etl.exe"
+    CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Play Enemy Territory - Legacy on ETLegacy.com.lnk" "et://etlegacy.com:27960" "" "$INSTDIR\etl.ico"
     CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Uninstall.lnk" "$INSTDIR\uninstall.exe"
     CreateShortCut "$DESKTOP\ET-Legacy.lnk" "$INSTDIR\etl.exe"
 SectionEnd
@@ -250,15 +250,14 @@ Section -Post
     WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\etl.exe"
     WriteRegDWORD HKLM "${PRODUCT_UNINST_KEY}" "NoModify" 1
     WriteRegDWORD HKLM "${PRODUCT_UNINST_KEY}" "NoRepair" 1
-    WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "UninstallString" '"$INSTDIR\uninstall.exe"'
+    WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninstall.exe"
 SectionEnd
 
 ; Section descriptions
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${FILES} "Install Enemy Territory: Legacy files."
     !insertmacro MUI_DESCRIPTION_TEXT ${ASSETS} "Retrieve Wolfenstein: Enemy Territory .pk3 assets. Data files will be downloaded if not found locally."
-    !insertmacro MUI_DESCRIPTION_TEXT ${OMNIBOT} "Install Omni-Bot files for your server or offline training. The latest version will be downloaded."
-    !insertmacro MUI_DESCRIPTION_TEXT ${URI} "Register et:// protocol with Enemy Territory: Legacy."
+    !insertmacro MUI_DESCRIPTION_TEXT ${OMNIBOT} "Install Omni-bot files for your server or offline training. The latest version will be downloaded."
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ; ------------------------
