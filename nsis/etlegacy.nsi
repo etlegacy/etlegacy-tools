@@ -1,9 +1,20 @@
 ; ------------------------
 ; ET:Legacy NSIS installer
 ; ------------------------
-; Files should be in ./etlegacy-windows-${VERSION}
+; Before runing NSIS, ensure to
+; - add NSIS zip plug-in in the current folder (download at http://nsis.sourceforge.net/ZipDLL_plug-in)
+; - add ET:Legacy binary files in a ."/etlegacy-windows-${VERSION}" subfolder without omni-bot files.
+; - change the version number below. You don't need to change anything else.
 
 !define VERSION "2.71rc3"
+
+; ------------------------
+; GENERAL
+; ------------------------
+
+!addplugindir "."
+CRCCheck on
+RequestExecutionLevel admin
 
 ; Variables
 Name "ET:Legacy ${VERSION}"
@@ -13,13 +24,6 @@ BrandingText "ET:Legacy ${VERSION} | http://www.etlegacy.com"
 !define PRODUCT_UNINST_KEY "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Enemy Territory - Legacy"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" "InstallPath"
 InstallDir "$PROGRAMFILES\Enemy Territory - Legacy\"
-
-; ------------------------
-; GENERAL
-; ------------------------
-
-CRCCheck on
-RequestExecutionLevel admin
 
 ; Header file
 !include MUI2.nsh
@@ -62,7 +66,6 @@ RequestExecutionLevel admin
 Section "Enemy Territory: Legacy" FILES
     SectionIn RO
     SetOverwrite ifnewer
-    AddSize 75000   ; approx
     SetOutPath $INSTDIR
     File /r "etlegacy-windows-${VERSION}\*.*"
 SectionEnd
@@ -71,45 +74,45 @@ Section "Wolfenstein: Enemy Territory assets" ASSETS
     SetOverwrite ifdiff
     AddSize 224530
     SetOutPath $TEMP
-    
+
     SetRegView 32
     ReadRegStr $1 HKLM "Software\Activision\Wolfenstein - Enemy Territory" "InstallPath"
-    
+
     IfFileExists "$INSTDIR\etmain\pak0.pk3" COPY_PAK1
     IfFileExists "$1\etmain\pak0.pk3" 0 +3
     copyfiles "$1\etmain\pak0.pk3" "$INSTDIR\etmain\"
     GOTO COPY_PAK1
-    IfFileExists '$TEMP\etl_install\pak0.pk3' 0 GET_INSTALL
+    IfFileExists "$TEMP\etl_install\pak0.pk3" 0 GET_INSTALL
     copyfiles "$TEMP\etl_install\pak0.pk3" "$INSTDIR\etmain\"
     GOTO COPY_PAK1
-    
+
     COPY_PAK1:
         IfFileExists "$INSTDIR\etmain\pak1.pk3" COPY_PAK2
         IfFileExists "$1\etmain\pak1.pk3" 0 +3
         copyfiles "$1\etmain\pak1.pk3" "$INSTDIR\etmain\"
         GOTO COPY_PAK2
-        IfFileExists '$TEMP\etl_install\pak1.pk3' 0 GET_PATCH
+        IfFileExists "$TEMP\etl_install\pak1.pk3" 0 GET_PATCH
         copyfiles "$TEMP\etl_install\pak1.pk3" "$INSTDIR\etmain\"
         GOTO COPY_PAK2
-    
+
     COPY_PAK2:
         IfFileExists "$INSTDIR\etmain\pak2.pk3" COPY_MP_BIN
         IfFileExists "$1\etmain\pak2.pk3" 0 +3
         copyfiles "$1\etmain\pak2.pk3" "$INSTDIR\etmain\"
         GOTO COPY_MP_BIN
-        IfFileExists '$TEMP\etl_install\pak2.pk3' 0 GET_PATCH
+        IfFileExists "$TEMP\etl_install\pak2.pk3" 0 GET_PATCH
         copyfiles "$TEMP\etl_install\pak2.pk3" "$INSTDIR\etmain\"
         GOTO COPY_MP_BIN
-    
+
     COPY_MP_BIN:
         IfFileExists "$INSTDIR\etmain\mp_bin.pk3" END
         IfFileExists "$1\etmain\mp_bin.pk3" 0 +3
         copyfiles "$1\etmain\mp_bin.pk3" "$INSTDIR\etmain\"
         GOTO END
-        IfFileExists '$TEMP\etl_install\mp_bin.pk3' 0 GET_PATCH
+        IfFileExists "$TEMP\etl_install\mp_bin.pk3" 0 GET_PATCH
         copyfiles "$TEMP\etl_install\mp_bin.pk3" "$INSTDIR\etmain\"
         GOTO END
-    
+
     GET_INSTALL:
         IfFileExists "$TEMP\WolfET.exe" UNPACK_INSTALL
         NSISdl::download "http://wolffiles.de/filebase/ET/Full%20Version/WolfET.exe" WolfET.exe
@@ -124,16 +127,16 @@ Section "Wolfenstein: Enemy Territory assets" ASSETS
         IfFileExists "$TEMP\WolfET.exe" UNPACK_INSTALL
         MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "Download Error: Couldn't fetch Installer file." \
         IDCANCEL USERCANCEL IDRETRY GET_INSTALL
-    
+
     UNPACK_INSTALL:
         MessageBox MB_ICONINFORMATION|MB_OK "During extraction of W:ET assets the screen will get black for a few seconds."
         ExecWait "$TEMP\WolfET.exe /x $TEMP\etl_install"
         IfFileExists "$TEMP\etl_install\pak0.pk3" +2
         MessageBox MB_ICONEXCLAMATION|MB_OK "Fatal Error: Installer extraction failed."
-        copyfiles '$TEMP\etl_install\pak0.pk3' '$INSTDIR\etmain'
+        copyfiles "$TEMP\etl_install\pak0.pk3" "$INSTDIR\etmain"
         IfFileExists "$INSTDIR\etmain\pak0.pk3" COPY_PAK1
         MessageBox MB_ICONEXCLAMATION|MB_OK "Fatal Error: Copy failed (pak0.pk3)."
-    
+
     GET_PATCH:
         IfFileExists "$TEMP\ET_Patch_2_60.exe" UNPACK_PATCH
         NSISdl::download "http://wolffiles.de/filebase/ET/Patches/ET_Patch_2_60.exe" ET_Patch_2_60.exe
@@ -148,7 +151,7 @@ Section "Wolfenstein: Enemy Territory assets" ASSETS
         IfFileExists "$TEMP\ET_Patch_2_60.exe" UNPACK_PATCH
         MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "Download Error: Couldn't fetch Patch file." \
         IDCANCEL USERCANCEL IDRETRY GET_PATCH
-    
+
     UNPACK_PATCH:
         ExecWait "$TEMP\ET_Patch_2_60.exe /x $TEMP\etl_install"
         IfFileExists "$TEMP\etl_install\pak1.pk3" +2
@@ -170,9 +173,33 @@ Section "Wolfenstein: Enemy Territory assets" ASSETS
     END:
 SectionEnd
 
+Section "Omni-Bot" OMNIBOT
+    AddSize 65000 ; approx
+    SetOutPath $TEMP
+    GOTO GET_BOT
+
+    GET_BOT:
+        IfFileExists "$TEMP\omnibot-windows-latest.zip" UNPACK_BOT
+        NSISdl::download "http://mirror.etlegacy.com/omnibot/omnibot-windows-latest.zip" omnibot-windows-latest.zip
+        IfFileExists "$TEMP\omnibot-windows-latest.zip" UNPACK_BOT
+        MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "Download Error: Couldn't fetch Omni-bot file." \
+        IDCANCEL END IDRETRY GET_BOT
+
+    UNPACK_BOT:
+        ZipDLL::extractall "$TEMP\omnibot-windows-latest.zip" "$INSTDIR\legacy\omni-bot"
+        IfFileExists "$INSTDIR\legacy\omni-bot\*.*" END
+        MessageBox MB_ICONEXCLAMATION|MB_OK "Fatal Error: Omni-bot extraction failed."
+
+    END:
+
+    SetOutPath $INSTDIR
+    CreateDirectory "$SMPROGRAMS\Enemy Territory - Legacy"
+    CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Enemy Territory - Legacy with Omni-Bots.lnk" "$INSTDIR\etl.exe"  "+set omni_bot enable 1 +set omnibot_path legacy\omni-bot\"
+SectionEnd
+
 Section "Protocol registration" URI
     WriteRegStr HKCR "et" "URL Protocol" ""
-    WriteRegStr HKCR "et" "" "URL: Enemy Territory Protocol"  
+    WriteRegStr HKCR "et" "" "URL: Enemy Territory Protocol"
     WriteRegStr HKCR "et\DefaultIcon" "" "$INSTDIR\etl.exe"
     WriteRegStr HKCR "et\shell\open\command" "" "$INSTDIR\etl.exe +set fs_basepath $\"$INSTDIR$\" +connect $\"%1$\""
 SectionEnd
@@ -183,39 +210,36 @@ Section -ETKEY
     ReadRegStr $1 HKLM "Software\Activision\Wolfenstein - Enemy Territory" "InstallPath"
     IfFileExists "$1\etmain\etkey" COPYETMAIN
     GOTO NOKEY
-    
+
     COPYAPPDATA:
         MessageBox MB_YESNO "ETKEY found. Do you want to use it with ET:Legacy?" IDNO END
         CreateDirectory `$DOCUMENTS\WolfETL\etmain`
         CopyFiles `$LOCALAPPDATA\Punkbuster\ET\etmain\etkey` `$DOCUMENTS\WolfETL\etmain`
         GOTO END
-    
+
     COPYETMAIN:
         MessageBox MB_YESNO "ETKEY found. Do you want to use it with ET:Legacy?" IDNO END
         CreateDirectory `$DOCUMENTS\WolfETL\etmain`
         CopyFiles `$1\etmain\etkey` `$DOCUMENTS\WolfETL\etmain`
         GOTO END
-    
+
     NOKEY:
         Messagebox MB_OK|MB_ICONINFORMATION "No ETKEY found. ET:Legacy will create a new ETKEY upon start. If you got a Backup of your own ETKEY copy it to $DOCUMENTS\WolfETL\etmain."
-        GOTO END  
+        GOTO END
 
     END:
 SectionEnd
 
 Section -Shortcuts
-    SetOverwrite on
     SetOutPath $INSTDIR
     CreateDirectory "$SMPROGRAMS\Enemy Territory - Legacy"
     CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Enemy Territory - Legacy Homepage.lnk" "http://www.etlegacy.com"
     CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Enemy Territory - Legacy.lnk" "$INSTDIR\etl.exe"
-    CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Enemy Territory - Legacy with Omni-Bots.lnk" "$INSTDIR\etl.exe"  "+set omni_bot enable 1 +set omnibot_path legacy\omni-bot\"
     CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Uninstall.lnk" "$INSTDIR\uninstall.exe"
     CreateShortCut "$DESKTOP\ET-Legacy.lnk" "$INSTDIR\etl.exe"
 SectionEnd
 
 Section -Post
-    SetOverwrite on
     WriteUninstaller "$INSTDIR\uninstall.exe"
     WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "InstallPath" "$INSTDIR"
     WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "Version" "${VERSION}"
@@ -231,8 +255,9 @@ SectionEnd
 
 ; Section descriptions
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${FILES} "Install Enemy Territory: Legacy files with Omni-Bot."
+    !insertmacro MUI_DESCRIPTION_TEXT ${FILES} "Install Enemy Territory: Legacy files."
     !insertmacro MUI_DESCRIPTION_TEXT ${ASSETS} "Retrieve Wolfenstein: Enemy Territory .pk3 assets. Data files will be downloaded if not found locally."
+    !insertmacro MUI_DESCRIPTION_TEXT ${OMNIBOT} "Install Omni-Bot files for your server or offline training. The latest version will be downloaded."
     !insertmacro MUI_DESCRIPTION_TEXT ${URI} "Register et:// protocol with Enemy Territory: Legacy."
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
@@ -264,7 +289,7 @@ SectionEND
 
 ; Section descriptions
 !insertmacro MUI_UNFUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${UNFILES} "Uninstall Enemy Territory: Legacy"
+    !insertmacro MUI_DESCRIPTION_TEXT ${UNFILES} "Uninstall Enemy Territory: Legacy and Omni-bot files."
     !insertmacro MUI_DESCRIPTION_TEXT ${UNASSETS} "Uninstall Wolfenstein: Enemy Territory .pk3 assets (pak0.pk3, pak1.pk3, pak2.pk3 and mp_bin.pk3)."
     !insertmacro MUI_DESCRIPTION_TEXT ${WOLFETL} "Delete ETKEY and all files created or downloaded inside the MyDocuments\WolfETL folder."
 !insertmacro MUI_UNFUNCTION_DESCRIPTION_END
