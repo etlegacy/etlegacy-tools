@@ -3,6 +3,7 @@
 ; ------------------------
 ; Before running NSIS, ensure to
 ; - add NSIS zip plug-in in the current folder (http://nsis.sourceforge.net/ZipDLL_plug-in)
+; - add NSIS md5 plug-in (ANSI) in the current folder (http://nsis.sourceforge.net/MD5_plugin)
 ; - add ET:Legacy binary files in a ."/etlegacy-windows-${VERSION}" subfolder without Omni-bot files.
 ; - change the version number below. You don't need to change anything else.
 
@@ -114,18 +115,29 @@ Section "Wolfenstein: Enemy Territory assets" ASSETS
         GOTO END
 
     GET_INSTALL:
-        IfFileExists "$TEMP\WolfET.exe" UNPACK_INSTALL
+        IfFileExists "$TEMP\WolfET.exe" CHECK_INSTALL
         NSISdl::download "http://wolffiles.de/filebase/ET/Full%20Version/WolfET.exe" WolfET.exe
-        IfFileExists "$TEMP\WolfET.exe" UNPACK_INSTALL
+        IfFileExists "$TEMP\WolfET.exe" CHECK_INSTALL
         NSISdl::download "http://mirror.etlegacy.com/WolfET.exe" WolfET.exe
-        IfFileExists "$TEMP\WolfET.exe" UNPACK_INSTALL
+        IfFileExists "$TEMP\WolfET.exe" CHECK_INSTALL
         NSISdl::download "http://ftp.freenet.de/pub/4players/hosted/et/official/WolfET.exe" WolfET.exe
-        IfFileExists "$TEMP\WolfET.exe" UNPACK_INSTALL
+        IfFileExists "$TEMP\WolfET.exe" CHECK_INSTALL
         NSISdl::download "http://ftp.games.skynet.be/pub/wolfenstein/WolfET.exe" WolfET.exe
-        IfFileExists "$TEMP\WolfET.exe" UNPACK_INSTALL
+        IfFileExists "$TEMP\WolfET.exe" CHECK_INSTALL
         NSISdl::download "http://download.hirntot.org/misc/WolfET.exe" WolfET.exe
-        IfFileExists "$TEMP\WolfET.exe" UNPACK_INSTALL
+        IfFileExists "$TEMP\WolfET.exe" CHECK_INSTALL
         MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "Download Error: Couldn't fetch Installer file." \
+        IDCANCEL USERCANCEL IDRETRY GET_INSTALL
+
+    CHECK_INSTALL:
+        md5dll::GetMD5File "$TEMP\WolfET.exe"
+        Pop $0
+        ${If} $0 == "5cc104767ecdf0feb3a36210adf46a8e"
+        GOTO UNPACK_INSTALL
+        ${Else}
+        Delete "$TEMP\WolfET.exe"
+        ${EndIf}
+        MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "Integrity Error: Installer MD5 checksum failed." \
         IDCANCEL USERCANCEL IDRETRY GET_INSTALL
 
     UNPACK_INSTALL:
@@ -138,18 +150,29 @@ Section "Wolfenstein: Enemy Territory assets" ASSETS
         MessageBox MB_ICONEXCLAMATION|MB_OK "Fatal Error: Copy failed (pak0.pk3)."
 
     GET_PATCH:
-        IfFileExists "$TEMP\ET_Patch_2_60.exe" UNPACK_PATCH
+        IfFileExists "$TEMP\ET_Patch_2_60.exe" CHECK_PATCH
         NSISdl::download "http://wolffiles.de/filebase/ET/Patches/ET_Patch_2_60.exe" ET_Patch_2_60.exe
-        IfFileExists "$TEMP\ET_Patch_2_60.exe" UNPACK_PATCH
+        IfFileExists "$TEMP\ET_Patch_2_60.exe" CHECK_PATCH
         NSISdl::download "http://mirror.etlegacy.com/ET_Patch_2_60.exe" ET_Patch_2_60.exe
-        IfFileExists "$TEMP\ET_Patch_2_60.exe" UNPACK_PATCH
+        IfFileExists "$TEMP\ET_Patch_2_60.exe" CHECK_PATCH
         NSISdl::download "http://ftp.freenet.de/pub/4players/hosted/et/official/ET_Patch_2_60.exe" ET_Patch_2_60.exe
-        IfFileExists "$TEMP\ET_Patch_2_60.exe" UNPACK_PATCH
+        IfFileExists "$TEMP\ET_Patch_2_60.exe" CHECK_PATCH
         NSISdl::download "http://ftp.games.skynet.be/pub/wolfenstein/ET_Patch_2_60.exe" ET_Patch_2_60.exe
-        IfFileExists "$TEMP\ET_Patch_2_60.exe" UNPACK_PATCH
+        IfFileExists "$TEMP\ET_Patch_2_60.exe" CHECK_PATCH
         NSISdl::download "http://download.hirntot.org/misc/ET_Patch_2_60.exe" ET_Patch_2_60.exe
-        IfFileExists "$TEMP\ET_Patch_2_60.exe" UNPACK_PATCH
+        IfFileExists "$TEMP\ET_Patch_2_60.exe" CHECK_PATCH
         MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "Download Error: Couldn't fetch Patch file." \
+        IDCANCEL USERCANCEL IDRETRY GET_PATCH
+
+    CHECK_PATCH:
+        md5dll::GetMD5File "$TEMP\ET_Patch_2_60.exe"
+        Pop $0
+        ${If} $0 == "a7ba6fdee3de6150b887068d58e91729"
+        GOTO UNPACK_PATCH
+        ${Else}
+        Delete "$TEMP\ET_Patch_2_60.exe"
+        ${EndIf}
+        MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "Integrity Error: Patch MD5 checksum failed." \
         IDCANCEL USERCANCEL IDRETRY GET_PATCH
 
     UNPACK_PATCH:
