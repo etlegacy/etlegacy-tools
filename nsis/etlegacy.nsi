@@ -1,11 +1,12 @@
 ; ------------------------
 ; ET:Legacy NSIS installer
 ; ------------------------
-; Before running NSIS, ensure to
-; - add NSIS zip plug-in in the current folder (http://nsis.sourceforge.net/ZipDLL_plug-in)
-; - add NSIS md5 plug-in (ANSI) in the current folder (http://nsis.sourceforge.net/MD5_plugin)
-; - add ET:Legacy binary files in a ."/etlegacy-windows-${VERSION}" subfolder without Omni-bot files.
-; - change the version number below. You don't need to change anything else.
+; Before running NSIS, ensure to add in the current folder:
+; - the NSIS zip plug-in             (http://nsis.sourceforge.net/ZipDLL_plug-in)
+; - the NSIS md5 plug-in (ANSI)      (http://nsis.sourceforge.net/MD5_plugin)
+; - the NSIS simple firewall plug-in (http://nsis.sourceforge.net/NSIS_Simple_Firewall_Plugin)
+; - the ET:Legacy binary files in a ."/etlegacy-windows-${VERSION}" subfolder without Omni-bot files.
+; Change the version number below. You don't need to change anything else.
 
 !define VERSION "2.71rc3"
 
@@ -69,6 +70,8 @@ Section "Enemy Territory: Legacy" FILES
     SetOverwrite ifnewer
     SetOutPath $INSTDIR
     File /r "etlegacy-windows-${VERSION}\*.*"
+    SimpleFC::AddApplication "ET:Legacy" "$INSTDIR\etl.exe" 0 2 "" 1
+    SimpleFC::AddApplication "ET:Legacy server" "$INSTDIR\etlded.exe" 0 2 "" 1
 SectionEnd
 
 Section "Wolfenstein: Enemy Territory assets" ASSETS
@@ -136,9 +139,9 @@ Section "Wolfenstein: Enemy Territory assets" ASSETS
         GOTO UNPACK_INSTALL
         ${Else}
         Delete "$TEMP\WolfET.exe"
-        ${EndIf}
         MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "Integrity Error: Installer MD5 checksum failed." \
         IDCANCEL USERCANCEL IDRETRY GET_INSTALL
+        ${EndIf}
 
     UNPACK_INSTALL:
         MessageBox MB_ICONINFORMATION|MB_OK "During extraction of W:ET assets the screen will get black for a few seconds."
@@ -171,9 +174,9 @@ Section "Wolfenstein: Enemy Territory assets" ASSETS
         GOTO UNPACK_PATCH
         ${Else}
         Delete "$TEMP\ET_Patch_2_60.exe"
-        ${EndIf}
         MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "Integrity Error: Patch MD5 checksum failed." \
         IDCANCEL USERCANCEL IDRETRY GET_PATCH
+        ${EndIf}
 
     UNPACK_PATCH:
         ExecWait "$TEMP\ET_Patch_2_60.exe /x $TEMP\etl_install"
@@ -297,6 +300,8 @@ Section "un.ET:Legacy" UNFILES
     DeleteRegKey HKCR "et"
     RMDir /r "$SMPROGRAMS\Enemy Territory - Legacy"
     Delete "$DESKTOP\ET-Legacy.lnk"
+    SimpleFC::RemoveApplication "$INSTDIR\etl.exe"
+    SimpleFC::RemoveApplication "$INSTDIR\etlded.exe"
 SectionEnd
 
 Section /o "un.Wolf:ET assets" UNASSETS
