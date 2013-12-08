@@ -5,7 +5,7 @@
 ; - the NSIS zip plug-in             (http://nsis.sourceforge.net/ZipDLL_plug-in)
 ; - the NSIS md5 plug-in (ANSI)      (http://nsis.sourceforge.net/MD5_plugin)
 ; - the NSIS simple firewall plug-in (http://nsis.sourceforge.net/NSIS_Simple_Firewall_Plugin)
-; - the ET:Legacy binary files in a ."/etlegacy-windows-${VERSION}" subfolder without Omni-bot files.
+; - the ET:Legacy binary files in a "etlegacy-windows-${VERSION}" subfolder without Omni-bot files.
 ; Change the version number below. You don't need to change anything else.
 
 !define VERSION "2.71rc3"
@@ -42,7 +42,8 @@ InstallDir "$PROGRAMFILES\Enemy Territory - Legacy\"
 !define MUI_UNCOMPONENTSPAGE_SMALLDESC
 
 ; Pages
-;!define MUI_FINISHPAGE_TEXT "ET:Legacy ${VERSION} has been installed on your computer.$\r$\n$\rYou will find all downloaded files, etkey and profile folder at $DOCUMENTS\WolfETL.$\r$\n$\rClick Finish to close Setup."
+!define MUI_FINISHPAGE_TEXT "ET:Legacy ${VERSION} has been installed on your computer.$\n$\n\
+You will find your ETKEY, profile folder and all downloaded files in the $DOCUMENTS\WolfETL directory."
 !define MUI_FINISHPAGE_RUN "$INSTDIR\etl.exe"
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "etlegacy-windows-${VERSION}\COPYING.txt"
@@ -208,7 +209,7 @@ Section "Omni-bot" OMNIBOT
         IfFileExists "$TEMP\omnibot-windows-latest.zip" UNPACK_BOT
         NSISdl::download "http://mirror.etlegacy.com/omnibot/omnibot-windows-latest.zip" omnibot-windows-latest.zip
         IfFileExists "$TEMP\omnibot-windows-latest.zip" UNPACK_BOT
-        MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "Download Error: Couldn't fetch Omni-bot file." \
+        MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "Download Error: Couldn't fetch Omni-bot files." \
         IDCANCEL END IDRETRY GET_BOT
 
     UNPACK_BOT:
@@ -260,7 +261,7 @@ Section -Shortcuts
     CreateDirectory "$SMPROGRAMS\Enemy Territory - Legacy"
     CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Enemy Territory - Legacy Homepage.lnk" "http://www.etlegacy.com" "" "$INSTDIR\etl.ico"
     CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Launch Enemy Territory - Legacy.lnk" "$INSTDIR\etl.exe"
-    CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Play Enemy Territory - Legacy on ETLegacy.com.lnk" "et://etlegacy.com:27960" "" "$INSTDIR\etl.ico"
+    CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Play on ETLegacy.com.lnk" "et://etlegacy.com:27960" "" "$INSTDIR\etl.ico"
     CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Uninstall.lnk" "$INSTDIR\uninstall.exe"
     CreateShortCut "$DESKTOP\ET-Legacy.lnk" "$INSTDIR\etl.exe"
 SectionEnd
@@ -318,5 +319,5 @@ SectionEND
 !insertmacro MUI_UNFUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${UNFILES} "Uninstall Enemy Territory: Legacy and Omni-bot files."
     !insertmacro MUI_DESCRIPTION_TEXT ${UNASSETS} "Uninstall Wolfenstein: Enemy Territory .pk3 assets (pak0.pk3, pak1.pk3, pak2.pk3 and mp_bin.pk3)."
-    !insertmacro MUI_DESCRIPTION_TEXT ${WOLFETL} "Delete ETKEY and all files created or downloaded inside the MyDocuments\WolfETL folder."
+    !insertmacro MUI_DESCRIPTION_TEXT ${WOLFETL} "Delete ETKEY and all created or downloaded files inside the $DOCUMENTS\WolfETL folder."
 !insertmacro MUI_UNFUNCTION_DESCRIPTION_END
