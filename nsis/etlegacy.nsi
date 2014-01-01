@@ -43,7 +43,7 @@ InstallDir "$PROGRAMFILES\Enemy Territory - Legacy\"
 
 ; Pages
 !define MUI_FINISHPAGE_TEXT "ET:Legacy ${VERSION} has been installed on your computer.$\n$\n\
-You will find your ETKEY, profile folder and all downloaded files in the $DOCUMENTS\WolfETL directory."
+You will find your ETKEY, profile folder and all downloaded files in the $DOCUMENTS\ETLegacy directory."
 !define MUI_FINISHPAGE_RUN "$INSTDIR\etl.exe"
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "etlegacy-windows-${VERSION}\COPYING.txt"
@@ -231,7 +231,7 @@ Section -URI
 SectionEnd
 
 Section -ETKEY
-    IfFileExists "$DOCUMENTS\WolfETL\etmain\etkey" END
+    IfFileExists "$DOCUMENTS\ETLegacy\etmain\etkey" END
     IfFileExists "$LOCALAPPDATA\Punkbuster\ET\etmain\etkey" COPYAPPDATA
     ReadRegStr $1 HKLM "Software\Activision\Wolfenstein - Enemy Territory" "InstallPath"
     IfFileExists "$1\etmain\etkey" COPYETMAIN
@@ -239,18 +239,18 @@ Section -ETKEY
 
     COPYAPPDATA:
         MessageBox MB_YESNO "ETKEY found. Do you want to use it with ET:Legacy?" IDNO END
-        CreateDirectory `$DOCUMENTS\WolfETL\etmain`
-        CopyFiles `$LOCALAPPDATA\Punkbuster\ET\etmain\etkey` `$DOCUMENTS\WolfETL\etmain`
+        CreateDirectory `$DOCUMENTS\ETLegacy\etmain`
+        CopyFiles `$LOCALAPPDATA\Punkbuster\ET\etmain\etkey` `$DOCUMENTS\ETLegacy\etmain`
         GOTO END
 
     COPYETMAIN:
         MessageBox MB_YESNO "ETKEY found. Do you want to use it with ET:Legacy?" IDNO END
-        CreateDirectory `$DOCUMENTS\WolfETL\etmain`
-        CopyFiles `$1\etmain\etkey` `$DOCUMENTS\WolfETL\etmain`
+        CreateDirectory `$DOCUMENTS\ETLegacy\etmain`
+        CopyFiles `$1\etmain\etkey` `$DOCUMENTS\ETLegacy\etmain`
         GOTO END
 
     NOKEY:
-        Messagebox MB_OK|MB_ICONINFORMATION "No ETKEY found. ET:Legacy will create a new ETKEY upon start. If you got a Backup of your own ETKEY copy it to $DOCUMENTS\WolfETL\etmain."
+        Messagebox MB_OK|MB_ICONINFORMATION "No ETKEY found. ET:Legacy will create a new ETKEY upon start. If you got a Backup of your own ETKEY copy it to $DOCUMENTS\ETLegacy\etmain."
         GOTO END
 
     END:
@@ -312,12 +312,12 @@ Section /o "un.Wolf:ET assets" UNASSETS
 SectionEND
 
 Section /o "un.ET:Legacy User files" WOLFETL
-    RMDir /r "$DOCUMENTS\WolfETL"
+    RMDir /r "$DOCUMENTS\ETLegacy"
 SectionEND
 
 ; Section descriptions
 !insertmacro MUI_UNFUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${UNFILES} "Uninstall Enemy Territory: Legacy and Omni-bot files."
     !insertmacro MUI_DESCRIPTION_TEXT ${UNASSETS} "Uninstall Wolfenstein: Enemy Territory .pk3 assets (pak0.pk3, pak1.pk3, pak2.pk3 and mp_bin.pk3)."
-    !insertmacro MUI_DESCRIPTION_TEXT ${WOLFETL} "Delete ETKEY and all created or downloaded files inside the $DOCUMENTS\WolfETL folder."
+    !insertmacro MUI_DESCRIPTION_TEXT ${WOLFETL} "Delete ETKEY and all created or downloaded files inside the $DOCUMENTS\ETLegacy folder."
 !insertmacro MUI_UNFUNCTION_DESCRIPTION_END
