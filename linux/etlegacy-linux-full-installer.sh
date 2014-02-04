@@ -119,7 +119,7 @@ note i "Installing..."
     chmod +x et-linux-2.60.x86.run
 
     ./et-linux-2.60.x86.run --noexec --target etlegacy
-    rm -rf etlegacy/{bin,Docs,README,pb,openurl.sh,CHANGES,ET.xpm} etlegacy/setup.{data,sh} etlegacy/etmain/*.cfg
+    rm -rf etlegacy/{bin,Docs,README,pb,openurl.sh,CHANGES,ET.xpm} etlegacy/setup.{data,sh} etlegacy/etmain/{*.cfg,*.so,*.txt,*.dat,mp_bin.pk3}
     rm -f  etlegacy/legacy/omni-bot/omnibot_et.dll
 
     cd etlegacy

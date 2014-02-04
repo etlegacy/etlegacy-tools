@@ -101,21 +101,12 @@ Section "Wolfenstein: Enemy Territory assets" ASSETS
         GOTO COPY_PAK2
 
     COPY_PAK2:
-        IfFileExists "$INSTDIR\etmain\pak2.pk3" COPY_MP_BIN
+        IfFileExists "$INSTDIR\etmain\pak2.pk3" END
         IfFileExists "$1\etmain\pak2.pk3" 0 +3
         copyfiles "$1\etmain\pak2.pk3" "$INSTDIR\etmain\"
-        GOTO COPY_MP_BIN
+        GOTO END
         IfFileExists "$TEMP\etl_install\pak2.pk3" 0 GET_PATCH
         copyfiles "$TEMP\etl_install\pak2.pk3" "$INSTDIR\etmain\"
-        GOTO COPY_MP_BIN
-
-    COPY_MP_BIN:
-        IfFileExists "$INSTDIR\etmain\mp_bin.pk3" END
-        IfFileExists "$1\etmain\mp_bin.pk3" 0 +3
-        copyfiles "$1\etmain\mp_bin.pk3" "$INSTDIR\etmain\"
-        GOTO END
-        IfFileExists "$TEMP\etl_install\mp_bin.pk3" 0 GET_PATCH
-        copyfiles "$TEMP\etl_install\mp_bin.pk3" "$INSTDIR\etmain\"
         GOTO END
 
     GET_INSTALL:
@@ -189,13 +180,10 @@ Section "Wolfenstein: Enemy Territory assets" ASSETS
         copyfiles "$TEMP\etl_install\pak2.pk3" "$INSTDIR\etmain\"
         IfFileExists "$INSTDIR\etmain\pak2.pk3" +2
         MessageBox MB_ICONEXCLAMATION|MB_OK "Fatal Error: Copy failed (pak2.pk3)."
-        copyfiles "$TEMP\etl_install\mp_bin.pk3" "$INSTDIR\etmain\"
-        IfFileExists "$INSTDIR\etmain\mp_bin.pk3" +2
-        MessageBox MB_ICONEXCLAMATION|MB_OK "Fatal Error: Copy failed (mp_bin.pk3)."
         GOTO END
 
     USERCANCEL:
-        Messagebox MB_OK|MB_ICONEXCLAMATION "Make sure to copy W:ET assets files (pak0.pk3, pak1.pk3, pak2.pk3 and mp_bin.pk3) into $INSTDIR\etmain before you run ET:Legacy."
+        Messagebox MB_OK|MB_ICONEXCLAMATION "Make sure to copy W:ET assets files (pak0.pk3, pak1.pk3, pak2.pk3) into $INSTDIR\etmain before you run ET:Legacy."
 
     END:
 SectionEnd
@@ -318,6 +306,6 @@ SectionEND
 ; Section descriptions
 !insertmacro MUI_UNFUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${UNFILES} "Uninstall Enemy Territory: Legacy and Omni-bot files."
-    !insertmacro MUI_DESCRIPTION_TEXT ${UNASSETS} "Uninstall Wolfenstein: Enemy Territory .pk3 assets (pak0.pk3, pak1.pk3, pak2.pk3 and mp_bin.pk3)."
+    !insertmacro MUI_DESCRIPTION_TEXT ${UNASSETS} "Uninstall Wolfenstein: Enemy Territory .pk3 assets (pak0.pk3, pak1.pk3, pak2.pk3)."
     !insertmacro MUI_DESCRIPTION_TEXT ${WOLFETL} "Delete ETKEY and all created or downloaded files inside the $DOCUMENTS\ETLegacy folder."
 !insertmacro MUI_UNFUNCTION_DESCRIPTION_END
