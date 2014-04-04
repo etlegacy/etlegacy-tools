@@ -208,7 +208,7 @@ Section "Omni-bot" OMNIBOT
     END:
         SetOutPath $INSTDIR
         CreateDirectory "$SMPROGRAMS\Enemy Territory - Legacy"
-        CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Launch Enemy Territory - Legacy with Omni-bots.lnk" "$INSTDIR\etl.exe"  "+set omni_bot enable 1 +set omnibot_path legacy\omni-bot\"
+        CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Launch Enemy Territory - Legacy with Omni-bots.lnk" "$INSTDIR\etl.exe"  "+set omnibot_enable 1 +set omnibot_path legacy\omni-bot\"
 SectionEnd
 
 Section -URI
