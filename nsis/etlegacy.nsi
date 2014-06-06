@@ -73,8 +73,8 @@ Section "Enemy Territory: Legacy" FILES
     File /r "etlegacy-windows-${VERSION}\*.*"
     SimpleFC::AddApplication "ET:Legacy" "$INSTDIR\etl.exe" 0 2 "" 1
     SimpleFC::AddApplication "ET:Legacy server" "$INSTDIR\etlded.exe" 0 2 "" 1
-    ; If we compile with /MT we will not need to install the redist
-    ; Call InstallVC
+    ; If we compile with /MT we will not need to install the redist (rc4 still had /MD)
+    Call InstallVC
 SectionEnd
 
 Section "Wolfenstein: Enemy Territory assets" ASSETS
@@ -273,23 +273,30 @@ SectionEnd
 ; Functions
 Function InstallVC
     Push $R0
-    ; TODO: Fix clsid:s to match 2013 VS version
+    ; Fixed the search for 2013 redist
     ClearErrors
-    ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{9A25302D-30C0-39D9-BD6F-21E6EC160475}" "Version"
+    ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{13A4EE12-23EA-3371-91EE-EFB36DDFFF3E}" "Version"
     IfErrors 0 VSRedistInstalled
     ClearErrors
-    ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{86CE1746-9EFF-3C9C-8755-81EA8903AC34}" "Version"
+    ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{F8CFEB22-A2E7-3971-9EDA-4B11EDEFC185}" "Version"
     IfErrors 0 VSRedistInstalled
     ; Maybe we should just install it and not even comfirm?
-    MessageBox MB_ICONQUESTION|MB_YESNO "ET:Legacy requires MS VC++ 2013 Redistributable, do you want to install it ?" IDNO VSRedistInstalled
+    MessageBox MB_ICONQUESTION|MB_YESNO "ET:Legacy requires MS VC++ 2013 Redistributable, do you want to install it?" IDNO VSRedistMissing
     File /nonfatal "vcredist\vcredist_x86.exe"
-    ; we either use /quiet or /passive quiet shows nothing and passive show minimal UI with no user interactions
+    ; we either use /quiet or /passive, quiet shows nothing and passive show minimal UI with no user interactions
     ; /nostart do not popup a restart window, we does not want it and we does not need it my precious!
     ExecWait '"$INSTDIR\vcredist_x86.exe"  /passive /norestart'
     VSRedistInstalled:
-        Exch $R0
+        ; Do we want to so something on this stage?
+        GOTO VSCleanUp
 
-    Delete "$INSTDIR\vcredist_x86.exe"
+    VSRedistMissing:
+        ; Do we want to abort the installation? ETL will not launch without the vcredist.
+        ; abort
+
+    VSCleanUp:
+        Exch $R0
+        Delete "$INSTDIR\vcredist_x86.exe"
 FunctionEnd
 
 ; Section descriptions
