@@ -117,8 +117,6 @@ Section "Wolfenstein: Enemy Territory assets" ASSETS
         IfFileExists "$TEMP\WolfET.exe" CHECK_INSTALL
         NSISdl::download "http://mirror.etlegacy.com/WolfET.exe" WolfET.exe
         IfFileExists "$TEMP\WolfET.exe" CHECK_INSTALL
-        NSISdl::download "http://ftp.freenet.de/pub/4players/hosted/et/official/WolfET.exe" WolfET.exe
-        IfFileExists "$TEMP\WolfET.exe" CHECK_INSTALL
         NSISdl::download "http://ftp.games.skynet.be/pub/wolfenstein/WolfET.exe" WolfET.exe
         IfFileExists "$TEMP\WolfET.exe" CHECK_INSTALL
         NSISdl::download "http://download.hirntot.org/misc/WolfET.exe" WolfET.exe
@@ -151,8 +149,6 @@ Section "Wolfenstein: Enemy Territory assets" ASSETS
         NSISdl::download "http://wolffiles.de/filebase/ET/Patches/ET_Patch_2_60.exe" ET_Patch_2_60.exe
         IfFileExists "$TEMP\ET_Patch_2_60.exe" CHECK_PATCH
         NSISdl::download "http://mirror.etlegacy.com/ET_Patch_2_60.exe" ET_Patch_2_60.exe
-        IfFileExists "$TEMP\ET_Patch_2_60.exe" CHECK_PATCH
-        NSISdl::download "http://ftp.freenet.de/pub/4players/hosted/et/official/ET_Patch_2_60.exe" ET_Patch_2_60.exe
         IfFileExists "$TEMP\ET_Patch_2_60.exe" CHECK_PATCH
         NSISdl::download "http://ftp.games.skynet.be/pub/wolfenstein/ET_Patch_2_60.exe" ET_Patch_2_60.exe
         IfFileExists "$TEMP\ET_Patch_2_60.exe" CHECK_PATCH
