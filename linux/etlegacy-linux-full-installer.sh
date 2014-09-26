@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# ET:Legacy Linux full installer - Download and install the whole ET:Legacy universe. Hf!
+# ET: Legacy Linux full installer - Download and install the whole ET: Legacy universe. Hf!
 #
 # - Put this script into your $HOME path or any desired folder.
 # - Change permission to execute and run the script.
@@ -82,7 +82,7 @@ echo -e "${colorB}**************************************************************
 echo
 
 # license
-note i "ET:Legacy is published under the GNU GPLv3 license"
+note i "ET: Legacy is published under the GNU GPLv3 license"
 note i "See http://www.gnu.org/licenses/gpl-3.0"
 note i ""
 note i "W:ET assets are still covered by the original EULA"
@@ -102,11 +102,11 @@ if [ ! -f et-linux-2.60.x86.run ]; then
     downloader http://ftp.gwdg.de/pub/misc/ftp.idsoftware.com/idstuff/et/linux/et-linux-2.60.x86.run
 fi
 if [ ! -f etlegacy-linux-${version}.zip ]; then
-    note i "Fetching ET:Legacy files..."
+    note i "Fetching ET: Legacy files..."
     downloader http://mirror.etlegacy.com/release/etlegacy-linux-${version}.zip
 fi
 if [ ! -f omnibot-linux-latest.tar.gz ]; then
-    note i "Fetching Omni-Bot files..."
+    note i "Fetching Omni-bot files..."
     downloader http://mirror.etlegacy.com/omnibot/omnibot-linux-latest.tar.gz
 fi
 
@@ -150,7 +150,7 @@ fi
 # end
 echo
 echo -e "${colorB}***********************************************************************${reset}"
-echo -e "                 ${colorR}Thank you for installing ET:Legacy${reset}"
+echo -e "                 ${colorR}Thank you for installing ET: Legacy${reset}"
 echo -e "${colorB}***********************************************************************${reset}"
 echo -e "      Visit us on ${colorY}www.etlegacy.com${reset} and ${colorY}IRC #etlegacy@freenode.net${reset}"
 echo -e "${colorB}***********************************************************************${reset}"
