@@ -1,11 +1,11 @@
 ; ------------------------
-; ET:Legacy NSIS installer
+; ET: Legacy NSIS installer
 ; ------------------------
 ; Before running NSIS, ensure to add in the current folder:
 ; - the NSIS zip plug-in             (http://nsis.sourceforge.net/ZipDLL_plug-in)
 ; - the NSIS md5 plug-in (ANSI)      (http://nsis.sourceforge.net/MD5_plugin)
 ; - the NSIS simple firewall plug-in (http://nsis.sourceforge.net/NSIS_Simple_Firewall_Plugin)
-; - the ET:Legacy binary files in a "etlegacy-windows-${VERSION}" subfolder without Omni-bot files.
+; - the ET: Legacy binary files in a "etlegacy-windows-${VERSION}" subfolder without Omni-bot files.
 ; Change the version number below. You don't need to change anything else.
 
 !define VERSION "2.71rc4"
@@ -19,9 +19,9 @@ CRCCheck on
 RequestExecutionLevel admin
 
 ; Variables
-Name "ET:Legacy ${VERSION}"
+Name "ET: Legacy ${VERSION}"
 OutFile "etlegacy-windows-${VERSION}-full-installer.exe"
-BrandingText "ET:Legacy ${VERSION} | http://www.etlegacy.com"
+BrandingText "ET: Legacy ${VERSION} | http://www.etlegacy.com"
 !define PRODUCT_DIR_REGKEY "SOFTWARE\Enemy Territory - Legacy"
 !define PRODUCT_UNINST_KEY "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Enemy Territory - Legacy"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" "InstallPath"
@@ -42,7 +42,7 @@ InstallDir "$PROGRAMFILES\Enemy Territory - Legacy\"
 !define MUI_UNCOMPONENTSPAGE_SMALLDESC
 
 ; Pages
-!define MUI_FINISHPAGE_TEXT "ET:Legacy ${VERSION} has been installed on your computer.$\n$\n\
+!define MUI_FINISHPAGE_TEXT "ET: Legacy ${VERSION} has been installed on your computer.$\n$\n\
 You will find your ETKEY, profile folder and all downloaded files in the $DOCUMENTS\ETLegacy directory."
 !define MUI_FINISHPAGE_RUN "$INSTDIR\etl.exe"
 !insertmacro MUI_PAGE_WELCOME
@@ -71,8 +71,8 @@ Section "Enemy Territory: Legacy" FILES
     SetOverwrite ifnewer
     SetOutPath $INSTDIR
     File /r "etlegacy-windows-${VERSION}\*.*"
-    SimpleFC::AddApplication "ET:Legacy" "$INSTDIR\etl.exe" 0 2 "" 1
-    SimpleFC::AddApplication "ET:Legacy server" "$INSTDIR\etlded.exe" 0 2 "" 1
+    SimpleFC::AddApplication "ET: Legacy" "$INSTDIR\etl.exe" 0 2 "" 1
+    SimpleFC::AddApplication "ET: Legacy server" "$INSTDIR\etlded.exe" 0 2 "" 1
     ; If we compile with /MT we will not need to install the redist (rc4 still had /MD)
     Call InstallVC
 SectionEnd
@@ -181,7 +181,7 @@ Section "Wolfenstein: Enemy Territory assets" ASSETS
         GOTO END
 
     USERCANCEL:
-        Messagebox MB_OK|MB_ICONEXCLAMATION "Make sure to copy W:ET assets files (pak0.pk3, pak1.pk3, pak2.pk3) into $INSTDIR\etmain before you run ET:Legacy."
+        Messagebox MB_OK|MB_ICONEXCLAMATION "Make sure to copy W:ET assets files (pak0.pk3, pak1.pk3, pak2.pk3) into $INSTDIR\etmain before you run ET: Legacy."
 
     END:
 SectionEnd
@@ -224,19 +224,19 @@ Section -ETKEY
     GOTO NOKEY
 
     COPYAPPDATA:
-        MessageBox MB_YESNO "ETKEY found. Do you want to use it with ET:Legacy?" IDNO END
+        MessageBox MB_YESNO "ETKEY found. Do you want to use it with ET: Legacy?" IDNO END
         CreateDirectory `$DOCUMENTS\ETLegacy\etmain`
         CopyFiles `$LOCALAPPDATA\Punkbuster\ET\etmain\etkey` `$DOCUMENTS\ETLegacy\etmain`
         GOTO END
 
     COPYETMAIN:
-        MessageBox MB_YESNO "ETKEY found. Do you want to use it with ET:Legacy?" IDNO END
+        MessageBox MB_YESNO "ETKEY found. Do you want to use it with ET: Legacy?" IDNO END
         CreateDirectory `$DOCUMENTS\ETLegacy\etmain`
         CopyFiles `$1\etmain\etkey` `$DOCUMENTS\ETLegacy\etmain`
         GOTO END
 
     NOKEY:
-        Messagebox MB_OK|MB_ICONINFORMATION "No ETKEY found. ET:Legacy will create a new ETKEY upon start. If you got a Backup of your own ETKEY copy it to $DOCUMENTS\ETLegacy\etmain."
+        Messagebox MB_OK|MB_ICONINFORMATION "No ETKEY found. ET: Legacy will create a new ETKEY upon start. If you got a Backup of your own ETKEY copy it to $DOCUMENTS\ETLegacy\etmain."
         GOTO END
 
     END:
@@ -247,9 +247,9 @@ Section -Shortcuts
     CreateDirectory "$SMPROGRAMS\Enemy Territory - Legacy"
     CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Enemy Territory - Legacy Homepage.lnk" "http://www.etlegacy.com" "" "$INSTDIR\etl.ico"
     CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Launch Enemy Territory - Legacy.lnk" "$INSTDIR\etl.exe"
-    CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Play on ETLegacy.com.lnk" "et://etlegacy.com:27960" "" "$INSTDIR\etl.ico"
+    CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Play on Official Server.lnk" "et://etlegacy.com:27960" "" "$INSTDIR\etl.ico"
     CreateShortCut "$SMPROGRAMS\Enemy Territory - Legacy\Uninstall.lnk" "$INSTDIR\uninstall.exe"
-    CreateShortCut "$DESKTOP\ET-Legacy.lnk" "$INSTDIR\etl.exe"
+    CreateShortCut "$DESKTOP\Enemy Territory - Legacy.lnk" "$INSTDIR\etl.exe"
 SectionEnd
 
 Section -Post
@@ -258,7 +258,7 @@ Section -Post
     WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "Version" "${VERSION}"
     WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "DisplayName" "Enemy Territory: Legacy"
     WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${VERSION}"
-    WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "Publisher" "ET:Legacy Team"
+    WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "Publisher" "ET: Legacy Team"
     WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "http://www.etlegacy.com"
     WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\etl.exe"
     WriteRegDWORD HKLM "${PRODUCT_UNINST_KEY}" "NoModify" 1
@@ -276,8 +276,8 @@ Function InstallVC
     ClearErrors
     ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{F8CFEB22-A2E7-3971-9EDA-4B11EDEFC185}" "Version"
     IfErrors 0 VSRedistInstalled
-    ; Maybe we should just install it and not even comfirm?
-    MessageBox MB_ICONQUESTION|MB_YESNO "ET:Legacy requires MS VC++ 2013 Redistributable, do you want to install it?" IDNO VSRedistMissing
+    ; Maybe we should just install it and not even confirm?
+    MessageBox MB_ICONQUESTION|MB_YESNO "ET: Legacy requires MS VC++ 2013 Redistributable, do you want to install it?" IDNO VSRedistMissing
     File /nonfatal "vcredist\vcredist_x86.exe"
     ; we either use /quiet or /passive, quiet shows nothing and passive show minimal UI with no user interactions
     ; /nostart do not popup a restart window, we does not want it and we does not need it my precious!
@@ -306,7 +306,7 @@ FunctionEnd
 ; UNINSTALL
 ; ------------------------
 
-Section "un.ET:Legacy" UNFILES
+Section "un.ET: Legacy" UNFILES
     SectionIN RO
     Delete "$INSTDIR\*.*"
     Delete "$INSTDIR\etmain\*.cfg"
@@ -315,18 +315,18 @@ Section "un.ET:Legacy" UNFILES
     DeleteRegKey HKLM "${PRODUCT_UNINST_KEY}"
     DeleteRegKey HKCR "et"
     RMDir /r "$SMPROGRAMS\Enemy Territory - Legacy"
-    Delete "$DESKTOP\ET-Legacy.lnk"
+    Delete "$DESKTOP\Enemy Territory - Legacy.lnk"
     SimpleFC::RemoveApplication "$INSTDIR\etl.exe"
     SimpleFC::RemoveApplication "$INSTDIR\etlded.exe"
 SectionEnd
 
-Section /o "un.Wolf:ET assets" UNASSETS
+Section /o "un.Wolf: ET assets" UNASSETS
     Delete "$INSTDIR\etmain\*.pk3"
     RMDir "$INSTDIR\etmain"
     RMDir "$INSTDIR"
 SectionEND
 
-Section /o "un.ET:Legacy User files" WOLFETL
+Section /o "un.ET: Legacy User files" WOLFETL
     RMDir /r "$DOCUMENTS\ETLegacy"
 SectionEND
 
