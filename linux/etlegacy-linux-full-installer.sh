@@ -101,7 +101,7 @@ if [ ! -f et-linux-2.60.x86.run ]; then
 fi
 if [ ! -f etlegacy-linux-${version}.zip ]; then
     note i "Fetching ET:Legacy files..."
-    downloader http://mirror.etlegacy.com/release/etlegacy-linux-2.71rc4.zip
+    downloader http://mirror.etlegacy.com/release/etlegacy-linux-${version}.zip
 fi
 if [ ! -f omnibot-linux-latest.tar.gz ]; then
     note i "Fetching Omni-Bot files..."
@@ -141,7 +141,7 @@ note s "Installation successful!"
 echo
 if ! proceed "n" "Remove downloaded files archive?"; then
     rm -i et-linux-2.60.x86.run
-    rm -i etlegacy-linux-${version}.tar.gz
+    rm -i etlegacy-linux-${version}.zip
     rm -i omnibot-linux-latest.tar.gz
 fi
 
