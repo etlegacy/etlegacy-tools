@@ -18,9 +18,9 @@ version="2.71rc4"
 
 checksums=`mktemp`
 cat >$checksums <<'EOF'
-b14283e390b3ff7ef1a4a58c0ec1fa1dabfb9a658c8e8824f0cc842e0ab6d76e  etlegacy-linux-2.71rc4.tar.gz
+2f8c892db6c1c2cc05872d0690b3ca31940f7ba75d99321919eb7f388b73e6e1  etlegacy-linux-2.71rc4.zip
 41cbbc1afb8438bc8fc74a64a171685550888856005111cbf9af5255f659ae36  et-linux-2.60.x86.run
-edbcff363836cc5e9f298dc40ab86b63cc5d8ed9d0f99967e868c13a42ff3c55  omnibot-linux-latest.tar.gz
+5f3df842670a4442cba1f542b083f856d0e55c70b62b679e0f96eceea588f0c7  omnibot-linux-latest.tar.gz
 EOF
 
 #
@@ -99,9 +99,9 @@ if [ ! -f et-linux-2.60.x86.run ]; then
     note i "Fetching W:ET assets data files..."
     downloader http://ftp.gwdg.de/pub/misc/ftp.idsoftware.com/idstuff/et/linux/et-linux-2.60.x86.run
 fi
-if [ ! -f etlegacy-linux-${version}.tar.gz ]; then
+if [ ! -f etlegacy-linux-${version}.zip ]; then
     note i "Fetching ET:Legacy files..."
-    downloader http://mirror.etlegacy.com/etlegacy-linux-${version}.tar.gz
+    downloader http://mirror.etlegacy.com/release/etlegacy-linux-2.71rc4.zip
 fi
 if [ ! -f omnibot-linux-latest.tar.gz ]; then
     note i "Fetching Omni-Bot files..."
@@ -120,10 +120,9 @@ note i "Installing..."
 
     ./et-linux-2.60.x86.run --noexec --target etlegacy
     rm -rf etlegacy/{bin,Docs,README,pb,openurl.sh,CHANGES,ET.xpm} etlegacy/setup.{data,sh} etlegacy/etmain/{*.cfg,*.so,*.txt,*.dat,mp_bin.pk3}
-    rm -f  etlegacy/legacy/omni-bot/omnibot_et.dll
 
     cd etlegacy
-    tar -zxvf ../etlegacy-linux-${version}.tar.gz
+    unzip ../etlegacy-linux-${version}.zip
 
     chmod -f 755 etl
     chmod -f 755 etlded
