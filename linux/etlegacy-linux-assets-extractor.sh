@@ -1,27 +1,19 @@
 #!/bin/bash
 
 #
-# ET:Legacy Linux full installer - Download and install the whole ET:Legacy universe. Hf!
+# ET:Legacy Linux assets extractor - Download and extract Wolf:ET assets
 #
 # - Put this script into your $HOME path or any desired folder.
 # - Change permission to execute and run the script.
-#
-# Important notes:
-# - Don't try to overwrite previous ET: Legacy versions - it won't work!
-# - This is a 32 bit application - if you start ET:L and a 'file not found error'
-#   is thrown ensure your system supports executing 32 bit applications
 
 # TODO:
 # - Add some mirrors
 
-version="2.71rc4"
-
 checksums=`mktemp`
 cat >$checksums <<'EOF'
-2f8c892db6c1c2cc05872d0690b3ca31940f7ba75d99321919eb7f388b73e6e1  etlegacy-linux-2.71rc4.zip
 41cbbc1afb8438bc8fc74a64a171685550888856005111cbf9af5255f659ae36  et-linux-2.60.x86.run
-5f3df842670a4442cba1f542b083f856d0e55c70b62b679e0f96eceea588f0c7  omnibot-linux-latest.tar.gz
 EOF
+
 
 #
 # Tools
@@ -77,80 +69,57 @@ downloader() {
 #
 
 echo -e "${colorB}***********************************************************************${reset}"
-echo -e "           Enemy Teritorry: Legacy ${colorG}$version${reset} Linux full installer"
+echo -e "       Enemy Teritorry: Legacy - ${colorG}Wolf:ET assets${reset} Linux extractor"
 echo -e "${colorB}***********************************************************************${reset}"
 echo
 
 # license
-note i "ET:Legacy is published under the GNU GPLv3 license"
-note i "See http://www.gnu.org/licenses/gpl-3.0"
+note i "W:ET assets are covered by the original EULA"
 note i ""
-note i "W:ET assets are still covered by the original EULA"
 note i "See EULA_Wolfenstein_Enemy_Territory.txt at"
 note i "https://github.com/etlegacy/etlegacy-tools/"
 echo
 
-if ! proceed "y" "Do you agree with the licenses ?"; then
+if ! proceed "y" "Do you agree with the license ?"; then
     note e "Installation exited"
 fi
 
 # download
-note i "Preparing installation..."
+note i "Preparing extraction..."
 
 if [ ! -f et-linux-2.60.x86.run ]; then
     note i "Fetching W:ET assets data files..."
     downloader http://ftp.gwdg.de/pub/misc/ftp.idsoftware.com/idstuff/et/linux/et-linux-2.60.x86.run
 fi
-if [ ! -f etlegacy-linux-${version}.zip ]; then
-    note i "Fetching ET:Legacy files..."
-    downloader http://mirror.etlegacy.com/release/etlegacy-linux-${version}.zip
-fi
-if [ ! -f omnibot-linux-latest.tar.gz ]; then
-    note i "Fetching Omni-Bot files..."
-    downloader http://mirror.etlegacy.com/omnibot/omnibot-linux-latest.tar.gz
-fi
 
 # checksum
-note i "Checking downloaded files..."
+note i "Checking downloaded file..."
 
     sha256sum -c $checksums || note e "Integrity check failed"
 
 # installation
-note i "Installing..."
+note i "Extracting..."
 
     chmod +x et-linux-2.60.x86.run
 
-    ./et-linux-2.60.x86.run --noexec --target etlegacy
-    rm -rf etlegacy/{bin,Docs,README,pb,openurl.sh,CHANGES,ET.xpm} etlegacy/setup.{data,sh} etlegacy/etmain/{*.cfg,*.so,*.txt,*.dat,mp_bin.pk3}
+    ./et-linux-2.60.x86.run --noexec --target WolfETassets
+    rm -rf WolfETassets/{bin,Docs,README,pb,openurl.sh,CHANGES,ET.xpm,setup.{data,sh}}
+    rm -rf WolfETassets/etmain/{*.cfg,*.so,*.txt,*.dat,mp_bin.pk3,video}
 
-    cd etlegacy
-    unzip ../etlegacy-linux-${version}.zip
+    cd ..
 
-    chmod -f 755 etl
-    chmod -f 755 etlded
-    chmod -f 755 etlded_bot.sh
-    chmod -f 755 etl_bot.sh
-
-    cd legacy
-    tar -zxvf ../../omnibot-linux-latest.tar.gz
-    chmod -f 664 omni-bot/et/user/omni-bot.cfg
-
-    cd ../..
-
-note s "Installation successful!"
+note s "Extraction successful!"
 
 # cleaning
 echo
-if ! proceed "n" "Remove downloaded files archive?"; then
+if ! proceed "n" "Remove downloaded file archive?"; then
     rm -i et-linux-2.60.x86.run
-    rm -i etlegacy-linux-${version}.zip
-    rm -i omnibot-linux-latest.tar.gz
 fi
 
 # end
 echo
 echo -e "${colorB}***********************************************************************${reset}"
-echo -e "                 ${colorR}Thank you for installing ET:Legacy${reset}"
+echo -e "          You'll find the assets files in ${colorG}WolfETassets/etmain${reset}"
 echo -e "${colorB}***********************************************************************${reset}"
 echo -e "      Visit us on ${colorY}www.etlegacy.com${reset} and ${colorY}IRC #etlegacy@freenode.net${reset}"
 echo -e "${colorB}***********************************************************************${reset}"
