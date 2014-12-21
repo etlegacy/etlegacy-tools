@@ -13,14 +13,14 @@
 
 # TODO:
 # - Add some mirrors
+# - Add option for the 64 bit version
 
-version="2.71rc4"
+version="2.71a"
 
 checksums=`mktemp`
 cat >$checksums <<'EOF'
-2f8c892db6c1c2cc05872d0690b3ca31940f7ba75d99321919eb7f388b73e6e1  etlegacy-linux-2.71rc4.zip
+4a594f7246f762ffedfba845fbc32d9fd07487dfa0914ab5f4eff1e97c02a57c  etlegacy-2.71a-linux-i686.tar.gz
 41cbbc1afb8438bc8fc74a64a171685550888856005111cbf9af5255f659ae36  et-linux-2.60.x86.run
-5f3df842670a4442cba1f542b083f856d0e55c70b62b679e0f96eceea588f0c7  omnibot-linux-latest.tar.gz
 EOF
 
 #
@@ -101,9 +101,9 @@ if [ ! -f et-linux-2.60.x86.run ]; then
     note i "Fetching W:ET assets data files..."
     downloader http://ftp.gwdg.de/pub/misc/ftp.idsoftware.com/idstuff/et/linux/et-linux-2.60.x86.run
 fi
-if [ ! -f etlegacy-linux-${version}.zip ]; then
+if [ ! -f etlegacy-${version}-linux-i686.tar.gz ]; then
     note i "Fetching ET: Legacy files..."
-    downloader http://mirror.etlegacy.com/release/etlegacy-linux-${version}.zip
+    downloader http://mirror.etlegacy.com/release/etlegacy-${version}-linux-i686.tar.gz
 fi
 if [ ! -f omnibot-linux-latest.tar.gz ]; then
     note i "Fetching Omni-bot files..."
@@ -124,7 +124,7 @@ note i "Installing..."
     rm -rf etlegacy/{bin,Docs,README,pb,openurl.sh,CHANGES,ET.xpm} etlegacy/setup.{data,sh} etlegacy/etmain/{*.cfg,*.so,*.txt,*.dat,mp_bin.pk3}
 
     cd etlegacy
-    unzip ../etlegacy-linux-${version}.zip
+    tar -zxvf ../etlegacy-${version}-linux-i686.tar.gz
 
     chmod -f 755 etl
     chmod -f 755 etlded
@@ -143,7 +143,7 @@ note s "Installation successful!"
 echo
 if ! proceed "n" "Remove downloaded files archive?"; then
     rm -i et-linux-2.60.x86.run
-    rm -i etlegacy-linux-${version}.zip
+    rm -i etlegacy-linux-${version}-linux-i686.tar.gz
     rm -i omnibot-linux-latest.tar.gz
 fi
 
