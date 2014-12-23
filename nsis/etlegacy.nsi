@@ -8,7 +8,7 @@
 ; - the ET: Legacy binary files in a "etlegacy-windows-${VERSION}" subfolder without Omni-bot files.
 ; Change the version number below. You don't need to change anything else.
 
-!define VERSION "2.71rc4"
+!define VERSION "2.71a"
 
 ; ------------------------
 ; GENERAL
@@ -199,7 +199,7 @@ Section "Omni-bot" OMNIBOT
         IDCANCEL END IDRETRY GET_BOT
 
     UNPACK_BOT:
-        ZipDLL::extractall "$TEMP\omnibot-windows-latest.zip" "$INSTDIR\legacy\omni-bot"
+        ZipDLL::extractall "$TEMP\omnibot-windows-latest.zip" "$INSTDIR\legacy"
         IfFileExists "$INSTDIR\legacy\omni-bot\*.*" END
         MessageBox MB_ICONEXCLAMATION|MB_OK "Fatal Error: Omni-bot extraction failed."
 
