@@ -105,10 +105,10 @@ if [ ! -f etlegacy-${version}-linux-i686.tar.gz ]; then
     note i "Fetching ET: Legacy files..."
     downloader http://mirror.etlegacy.com/release/etlegacy-${version}-linux-i686.tar.gz
 fi
-if [ ! -f omnibot-linux-latest.tar.gz ]; then
-    note i "Fetching Omni-bot files..."
-    downloader http://mirror.etlegacy.com/omnibot/omnibot-linux-latest.tar.gz
-fi
+#if [ ! -f omnibot-linux-latest.tar.gz ]; then
+#    note i "Fetching Omni-bot files..."
+#    downloader http://mirror.etlegacy.com/omnibot/omnibot-linux-latest.tar.gz
+#fi
 
 # checksum
 note i "Checking downloaded files..."
@@ -123,19 +123,19 @@ note i "Installing..."
     ./et-linux-2.60.x86.run --noexec --target etlegacy
     rm -rf etlegacy/{bin,Docs,README,pb,openurl.sh,CHANGES,ET.xpm} etlegacy/setup.{data,sh} etlegacy/etmain/{*.cfg,*.so,*.txt,*.dat,mp_bin.pk3}
 
+    tar -zxvf etlegacy-${version}-linux-i686.tar.gz
+
     cd etlegacy
-    tar -zxvf ../etlegacy-${version}-linux-i686.tar.gz
 
     chmod -f 755 etl
     chmod -f 755 etlded
     chmod -f 755 etlded_bot.sh
     chmod -f 755 etl_bot.sh
 
-    cd legacy
-    tar -zxvf ../../omnibot-linux-latest.tar.gz
-    chmod -f 664 omni-bot/et/user/omni-bot.cfg
+    #tar -zxvf ../omnibot-linux-latest.tar.gz
+    #chmod -f 664 omni-bot/et/user/omni-bot.cfg
 
-    cd ../..
+    cd ..
 
 note s "Installation successful!"
 
@@ -143,8 +143,8 @@ note s "Installation successful!"
 echo
 if ! proceed "n" "Remove downloaded files archive?"; then
     rm -i et-linux-2.60.x86.run
-    rm -i etlegacy-linux-${version}-linux-i686.tar.gz
-    rm -i omnibot-linux-latest.tar.gz
+    rm -i etlegacy-${version}-linux-i686.tar.gz
+    #rm -i omnibot-linux-latest.tar.gz
 fi
 
 # end
