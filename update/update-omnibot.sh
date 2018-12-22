@@ -25,7 +25,6 @@ fi
 
 svn checkout --depth empty ${REPO_URL} omni-bot
 svn update --set-depth infinity omni-bot/et
-svn update -q --set-depth=exclude omni-bot/et/incomplete_navs
 svn update --set-depth infinity omni-bot/global_scripts
 svn update omni-bot/omnibot_et.so
 svn update omni-bot/omnibot_et.x86_64.so
