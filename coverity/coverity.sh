@@ -6,7 +6,7 @@
 # Runs in the docker builder at etlegacy.com
 #
 # Folder structure:
-# coverity.sh
+# - coverity.sh
 # - etlegacy
 #  ... built code
 # - github.com
@@ -18,9 +18,8 @@
 #         - cov-analysis-linux64-2019.03
 #         - cov-int
 #
-topdir="$HOME/github.com/etlegacy"
-srcdir="${topdir}/etlegacy" 
-covdir="${topdir}/coverity/etlegacy-cov"
+srcdir="$HOME/github.com/etlegacy/etlegacy"
+covdir="$HOME/github.com/etlegacy/coverity/etlegacy-cov"
 covver="linux64-2019.03" 
 
 # account
@@ -32,6 +31,7 @@ cd $srcdir
 git stash
 git checkout master
 git pull
+git submodule update --init --recursive
 
 # cleanup
 [[ -e $srcdir/build ]] && rm -rf $srcdir/build
@@ -57,7 +57,6 @@ version=$(git describe --always | sed -r 's/^v//;s/-/./g;')
 version=${version:${#version} - 7}
 
 # build
-cd $HOME/$srcdir
 $covdir/cov-analysis-${covver}/bin/cov-build --dir $covdir/cov-int make -j 4
 
 cd $covdir
@@ -74,6 +73,6 @@ curl -k \
 
 # cleanup
 rm ${covdir}/etlegacy-${version}.tgz
-#[[ -e "${topdir}/coverity/cov-int" ]] &&  rm -rf "${covdir}/cov-int" 
+#[[ -e "$HOME/github.com/etlegacy/coverity/cov-int" ]] &&  rm -rf "${covdir}/cov-int"
 
 # vim:set ts=4 sw=2 et:
