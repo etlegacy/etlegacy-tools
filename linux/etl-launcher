@@ -19,9 +19,33 @@ ETHOME="$HOME/.etlegacy"
 ETMAIN="$ETHOME/etmain"
 FOUNDPAK=
 DATAPAGE=/usr/share/etlegacy/etlegacy-data.html
+INSTALLER="$(type -p etl-installer 2>/dev/null)"
 
 [ -d "$ETHOME" ] || mkdir -p "$ETHOME"
 [ -d "$ETMAIN" ] || mkdir "$ETMAIN"
+
+show_instructions() {
+	exec xdg-open "$DATAPAGE"
+}
+
+start_game() {
+	exec /usr/bin/etl
+}
+
+start_installer() {
+	if tty 2>/dev/null; then
+		"$INSTALLER" && return 0
+	else
+		# In graphical session, try running it in terminal
+		# Do not care about errors here
+		# FIXME: is there better way to run command in terminal? Something like xdg-open?
+		gnome-terminal --title "ET Legacy data installer" -- "$INSTALLER" && return 0
+		konsole "$INSTALLER" && return 0
+		uxterm "$INSTALLER" && return 0
+		xterm "$INSTALLER" && return 0
+	fi
+	return 1
+}
 
 for PAK in etmain/pak{0,1,2}.pk3
 do
@@ -41,8 +65,14 @@ do
 	fi
 done
 
-if [ -z "$FOUNDPAK" ] && [ -f "$DATAPAGE" ]; then
-	echo "pak0.pk3 data not found!"
-	exec xdg-open "$DATAPAGE"
+if [ -z "$FOUNDPAK" ]; then
+	echo "pak[012].pk3 data not found!"
+	if [ -x "$INSTALLER"]; then
+		start_installer && start_game
+		# Would terminate here on success
+	fi
+	if [ -f "$DATAPAGE" ]; then
+		show_instructions
+	fi
 fi
-exec /usr/bin/etl
+start_game

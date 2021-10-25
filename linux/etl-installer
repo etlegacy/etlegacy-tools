@@ -32,6 +32,7 @@ DIALOG=$(type -p dialog 2>/dev/null)
 SUDO=$(type -p sudo 2>/dev/null)
 ET_FILE=et-linux-2.60.x86.run
 DSTDIR="$HOME/.etlegacy"
+SYSTEM_ET_DIR="/usr/local/games/enemy-territory"
 
 #
 # Tools
@@ -105,7 +106,7 @@ downloader() {
 #
 
 echo -e "${colorB}***********************************************************************${reset}"
-echo -e "       Enemy Teritorry: Legacy - ${colorG}Wolf:ET assets${reset} Linux extractor"
+echo -e "       Enemy Teritorry: Legacy - ${colorG}Wolf:ET assets${reset} Linux installer"
 echo -e "${colorB}***********************************************************************${reset}"
 echo
 
@@ -146,19 +147,34 @@ if ! proceed "y" $"Do you agree with the EULA?"; then
     note e $"Installation exited"
 fi
 
-if [ -x "$SUDO" ]; then
-    if proceed "n" "Install data for all users (requires sudo rights)?"; then
-        RUNAS=""
-    else
-        RUNAS="$SUDO"
-        DSTDIR="/usr/local/games/enemy-territory"
-    fi
+if [ -w /usr/local/games ]; then
+    RUNAS="" # root can write there already
+    DSTDIR="$SYSTEM_ET_DIR"
+elif [ -x "$SUDO" ] && ! proceed "n" "Install data for all users (requires sudo rights)?"; then
+    RUNAS="$SUDO"
+    DSTDIR="$SYSTEM_ET_DIR"
+else
+    RUNAS=""
 fi
+
 note i $"Extracting assets into "$DSTDIR"..."
 # RUNAS is intentionally unqoted
-if $RUNAS install -d "$DSTDIR" && $RUNAS sh ./et-linux-2.60.x86.run --noexec --tar xf -C "$DSTDIR" 'etmain/pak*.pk3'
+if $RUNAS install -d "$DSTDIR" && $RUNAS sh "$ET_FILE" --noexec --tar xf -C "$DSTDIR" 'etmain/pak*.pk3'
 then
     note s $"Extraction successful!"
+    if [ "$DSTDIR" = "$SYSTEM_ET_DIR" ]; then
+        for DIR in /usr/lib{,64}/etlegacy/etmain
+        do
+	    if [ -d "$DIR" ]; then
+                pushd $DIR
+                for PAK in "$DSTDIR"/etmain/pak*.pk3; do
+                    $RUNAS ln -s "$PAK"
+               done
+               popd
+            fi
+        done
+        note s $"Pk3 system symlinks done."
+    fi
 else
     note e $"Extraction failed!"
 fi
@@ -166,7 +182,7 @@ fi
 # cleaning
 echo
 if ! proceed "n" $"Remove downloaded file archive?"; then
-    rm -i "$ET_FILE"
+    rm -f "$ET_FILE"
 fi
 
 # end
