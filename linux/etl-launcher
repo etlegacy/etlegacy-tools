@@ -1,0 +1,48 @@
+#!/bin/sh
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# Authors: 2021 Petr Menšík <pemensik@fedoraproject.org>
+
+ETHOME="$HOME/.etlegacy"
+ETMAIN="$ETHOME/etmain"
+FOUNDPAK=
+DATAPAGE=/usr/share/etlegacy/etlegacy-data.html
+
+[ -d "$ETHOME" ] || mkdir -p "$ETHOME"
+[ -d "$ETMAIN" ] || mkdir "$ETMAIN"
+
+for PAK in etmain/pak{0,1,2}.pk3
+do
+	if ! [ -f "$ETHOME/$PAK" ]; then
+		[ -L "$ETHOME/$PAK" ] && rm "$ETHOME/$PAK"
+		for DIR in /usr{,/local}{,/games}/enemy-territory/ $ETHOME
+		do
+			[ "$DEBUG" = y ] && echo "Checking $DIR/$PAK"
+			if [ -f "$DIR/$PAK" ] && ! [ -L "$DIR/$PAK" ]; then
+				FOUNDPAK=Y
+				echo "Found $DIR/$PAK"
+				(cd $ETMAIN && ln -vs "$DIR/$PAK")
+			fi
+		done
+	else
+		FOUNDPAK=Y
+	fi
+done
+
+if [ -z "$FOUNDPAK" ] && [ -f "$DATAPAGE" ]; then
+	echo "pak0.pk3 data not found!"
+	exec xdg-open "$DATAPAGE"
+fi
+exec /usr/bin/etl
