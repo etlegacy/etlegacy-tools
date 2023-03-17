@@ -28,8 +28,11 @@ show_instructions() {
 	exec xdg-open "$DATAPAGE"
 }
 
+# First option argument is variant. Others are passed to the executable
 start_game() {
-	exec /usr/bin/etl
+	local VARIANT="${1:-}"
+	[ "$#" -gt 0 ] && shift
+	exec /usr/bin/etl${VARIANT} "$@"
 }
 
 start_installer() {
@@ -68,11 +71,11 @@ done
 if [ -z "$FOUNDPAK" ]; then
 	echo "pak[012].pk3 data not found!"
 	if [ -x "$INSTALLER"]; then
-		start_installer && start_game
+		start_installer && start_game "$@"
 		# Would terminate here on success
 	fi
 	if [ -f "$DATAPAGE" ]; then
 		show_instructions
 	fi
 fi
-start_game
+start_game "$@"
