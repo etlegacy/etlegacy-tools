@@ -1,0 +1,81 @@
+#!/bin/sh
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# Authors: 2021 Petr Menšík <pemensik@fedoraproject.org>
+
+ETHOME="$HOME/.etlegacy"
+ETMAIN="$ETHOME/etmain"
+FOUNDPAK=
+DATAPAGE=/usr/share/etlegacy/etlegacy-data.html
+INSTALLER="$(type -p etl-installer 2>/dev/null)"
+
+[ -d "$ETHOME" ] || mkdir -p "$ETHOME"
+[ -d "$ETMAIN" ] || mkdir "$ETMAIN"
+
+show_instructions() {
+	exec xdg-open "$DATAPAGE"
+}
+
+# First option argument is variant. Others are passed to the executable
+start_game() {
+	local VARIANT="${1:-}"
+	[ "$#" -gt 0 ] && shift
+	exec /usr/bin/etl${VARIANT} "$@"
+}
+
+start_installer() {
+	if tty 2>/dev/null; then
+		"$INSTALLER" && return 0
+	else
+		# In graphical session, try running it in terminal
+		# Do not care about errors here
+		# FIXME: is there better way to run command in terminal? Something like xdg-open?
+		gnome-terminal --title "ET Legacy data installer" -- "$INSTALLER" && return 0
+		konsole "$INSTALLER" && return 0
+		uxterm "$INSTALLER" && return 0
+		xterm "$INSTALLER" && return 0
+	fi
+	return 1
+}
+
+for PAK in etmain/pak{0,1,2}.pk3
+do
+	if ! [ -f "$ETHOME/$PAK" ]; then
+		[ -L "$ETHOME/$PAK" ] && rm "$ETHOME/$PAK"
+		for DIR in /usr{,/local}{,/games}/enemy-territory/ $ETHOME
+		do
+			[ "$DEBUG" = y ] && echo "Checking $DIR/$PAK"
+			if [ -f "$DIR/$PAK" ] && ! [ -L "$DIR/$PAK" ]; then
+				FOUNDPAK=Y
+				echo "Found $DIR/$PAK"
+				(cd $ETMAIN && ln -vs "$DIR/$PAK")
+			fi
+		done
+	else
+		FOUNDPAK=Y
+	fi
+done
+
+if [ -z "$FOUNDPAK" ]; then
+	echo "pak[012].pk3 data not found!"
+	if [ -x "$INSTALLER"]; then
+		start_installer && start_game "$@"
+		# Would terminate here on success
+	fi
+	if [ -f "$DATAPAGE" ]; then
+		show_instructions
+	fi
+fi
+start_game "$@"
